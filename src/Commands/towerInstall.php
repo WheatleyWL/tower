@@ -7,7 +7,7 @@ use Illuminate\Filesystem\Filesystem;
 
 class towerInstall extends Command
 {
-    public $signature = 'tower:install';
+    public $signature = 'admin:install';
 
     public $description = 'Command for first expand tower in your Laravel project';
 
