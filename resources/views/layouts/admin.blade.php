@@ -10,6 +10,8 @@
     <link href="/admin_assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/admin_assets/css/flatpickr.min.css" rel="stylesheet">
     <link href="/admin_assets/css/style.css" rel="stylesheet">
+    <link href="/admin_assets/libs/select2/select2.min.css" rel="stylesheet">
+
 
     <style>
         .bd-placeholder-img {
@@ -64,6 +66,8 @@
 
 </div>
 <script src="/admin_assets/js/jquery-3.6.3.min.js"></script>
+<script src="/admin_assets/libs/select2/select2.full.min.js"></script>
+<script src="/admin_assets/libs/select2/ru.js"></script>
 <script>
     $(document).ready(function(){
 
@@ -135,6 +139,8 @@
                 "locale": "ru",
                 "dateFormat": "d.m.Y"
             });
+
+            $('.select2').select2();
         }
     );
 </script>
