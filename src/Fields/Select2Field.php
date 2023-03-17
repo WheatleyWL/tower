@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Admin\Fields;
+namespace zedsh\tower\Fields;
 
 
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class Select2Field extends BaseField
 {
-    protected $template = 'admin.blade.fields.select2';
+    protected $template = 'tower::fields.select2';
     protected $collection;
     protected $id = 'id';
     protected $showField = 'name';
