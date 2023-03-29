@@ -6,6 +6,7 @@ $detail = $field->getDetailValue();
 ?>
 <div class="form-group">
     <label for="{{$field->getName()}}">{{$field->getTitle()}}</label>
+{{--    @dd($detail)--}}
     @if(!empty($detail))
         <div class="row">
         @foreach($detail as $file)
@@ -42,3 +43,42 @@ $detail = $field->getDetailValue();
     </div>
     @enderror
 </div>
+<script>
+    $(document).ready(function(){
+        $('body').on('change','#{{$field->getName()}}',function (e) {
+            e.preventDefault();
+
+            let input = document.getElementById('{{$field->getName()}}');
+            var data = new FormData();
+            let arrFiles = Object.entries(input.files);
+            arrFiles.forEach((item) => {
+                data.append('file'+item[0],item[1]);
+            })
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                method: "POST",
+                url: "{{ route('file.store') }}",
+                data: data,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                cache: false,
+                beforeSend: function () {
+                    console.log('beforeSend')
+                },
+                success: function (responseData) {
+                    console.log('sending')
+                }
+            }).done(function (data) {
+                console.log('afterSend')
+            }).fail(function (data) {
+            });
+        });
+    });
+</script>

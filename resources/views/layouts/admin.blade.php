@@ -11,6 +11,10 @@
     <link href="/admin_assets/css/flatpickr.min.css" rel="stylesheet">
     <link href="/admin_assets/css/style.css" rel="stylesheet">
     <link href="/admin_assets/libs/select2/select2.min.css" rel="stylesheet">
+    <script src="/admin_assets/js/jquery-3.6.3.min.js"></script>
+    <script src="/admin_assets/libs/select2/select2.full.min.js"></script>
+    <script src="/admin_assets/libs/select2/ru.js"></script>
+
 
 
     <style>
@@ -65,51 +69,7 @@
     </div>
 
 </div>
-<script src="/admin_assets/js/jquery-3.6.3.min.js"></script>
-<script src="/admin_assets/libs/select2/select2.full.min.js"></script>
-<script src="/admin_assets/libs/select2/ru.js"></script>
-<script>
-    $(document).ready(function(){
 
-        $('body').on('click','.delete-tag',function (e){
-            e.preventDefault();
-            var data = new FormData();
-            var button = $(this);
-            let url = button.attr('data-url');
-            let news_id = button.attr('data-news_id');
-            let tag_id = button.attr('data-tag_id');
-
-            data.append('news_id', news_id);
-            data.append('tag_id', tag_id);
-
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            $.ajax({
-                method: "POST",
-                url: url,
-                data: data,
-                dataType: 'json',
-                contentType: false,
-                processData: false,
-                cache: false,
-                beforeSend: function () {
-                },
-                success: function (responseData) {
-                }
-            }).done(function (data) {
-                window.location.reload();
-            }).fail(function (data) {
-            });
-
-
-        })
-
-    });
-</script>
 <script src="/admin_assets/js/bootstrap.bundle.min.js"></script>
 <script src="/admin_assets/libs/tinymce/tinymce.min.js"></script>
 <script src="/admin_assets/js/slug.js"></script>
