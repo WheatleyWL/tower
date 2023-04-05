@@ -19,6 +19,10 @@ class towerServiceProvider extends ServiceProvider
                 __DIR__ . '/../assets/admin_assets' => public_path('admin_assets'),
             ], 'public');
 
+            $this->publishes([
+                __DIR__ . '/../database/migrations/' => base_path('database/migrations'),
+            ], 'tower');
+
             $this->commands([
                 towerInstall::class,
                 towerCreateController::class,
@@ -26,7 +30,7 @@ class towerServiceProvider extends ServiceProvider
         }
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'tower');
-//        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 //        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
     }
 

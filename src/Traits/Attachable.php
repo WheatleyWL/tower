@@ -3,7 +3,7 @@
 namespace zedsh\tower\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use App\Models\File;
+use zedsh\tower\Models\File;
 
 trait Attachable
 {

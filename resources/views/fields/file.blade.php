@@ -51,9 +51,15 @@ $detail = $field->getDetailValue();
             let input = document.getElementById('{{$field->getName()}}');
             var data = new FormData();
             let arrFiles = Object.entries(input.files);
+            let modelId = "{{ array_values(request()->route()->originalParameters())[0] }}";
+            if(modelId.replace(/^\s+|\s+$/g, '')) {         // проверка на пустое поле
+                modelId = Number("{{ array_values(request()->route()->originalParameters())[0] }}");
+            }
             arrFiles.forEach((item) => {
                 data.append('file'+item[0],item[1]);
             })
+            data.append('modelId',modelId);
+            console.log(data.get('modelId'))
 
             $.ajaxSetup({
                 headers: {
