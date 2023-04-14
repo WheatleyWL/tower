@@ -6,157 +6,205 @@
  * @var \zedsh\tower\Forms\BaseForm $form
  */
 $detail = $field->getDetailValue();
+//dd($field->getModel()->files);
 ?>
 <div class="form-group">
     <label for="{{$field->getName()}}">{{$field->getTitle()}}</label>
     {{--    @dd($detail)--}}
-    @if(!empty($detail))
+    @if(!empty($field->getModel()->files))
         <div class="row">
-            @foreach($detail as $file)
-                <div class="card text-center" style="width: 200px; margin: 10px;">
-                    <a href="{{$file->url()}}" target="_blank">
-                        @if($file->isImage())
-                            <img src="{{$file->url()}}" class="card-img-top" alt="{{$file->url()}}" width="140px">
-                        @else
-                            <i class="fa fa-file"></i>
-                        @endif
-                    </a>
-                    <div class="card-body">
-                        <p class="card-text">{{$file->originalName()}}</p>
-                        @if(!empty($field->getRemoveRoute()))
-                            <p><a href="{{$field->getRemovePath($file)}}" class="btn btn-danger">Удалить</a></p>
-                        @endif
-                        <p>
-                            <label for="{{$field->getAttributeFormName($file->getId(),'title')}}">Title</label>
-                            <input class="form-control" name="{{$field->getAttributeFormName($file->getId(),'title')}}" value="{{$file->getTitle()}}">
-                            <label for="{{$field->getAttributeFormName($file->getId(),'alt')}}">Alt</label>
-                            <input class="form-control" name="{{$field->getAttributeFormName($file->getId(),'alt')}}" value="{{$file->getAlt()}}">
-                        </p>
+            @foreach($field->getModel()->files as $file)
+                @if($file->inputFieldName === $field->getName())
+                    {{--                @dd(url($file->path))--}}
+                    {{--            @dd($file)--}}
+                    <div class="card text-center" style="width: 200px; margin: 10px;" id="{{$field->getName()}}-{{$file->id}}">
+                        <a href="{{url($file->path)}}" target="_blank">
+                            @if($file->isImage())
+                                <img src="{{url($file->path)}}" class="card-img-top" alt="{{url($file->path)}}" width="140px">
+                            @else
+                                <i class="fa fa-file"></i>
+                            @endif
+                        </a>
+                        <div class="card-body">
+                            <p class="card-text">{{$file->name}}</p>
+                            {{--                        @if(!empty($field->getRemoveRoute()))--}}
+                            {{--                            <p><a href="{{$field->getRemovePath($file)}}" class="btn btn-danger">Удалить</a></p>--}}
+                            {{--                        @endif--}}
+                            <p>
+                                <button class="btn btn-danger delete-file-{{$field->getName()}}" data-file-id="{{$file->id}}">Удалить</button>
+                                {{--                            <label for="{{$field->getAttributeFormName($file->getId(),'title')}}">Title</label>--}}
+                                {{--                            <input class="form-control" name="{{$field->getAttributeFormName($file->getId(),'title')}}" value="{{$file->getTitle()}}">--}}
+                                {{--                            <label for="{{$field->getAttributeFormName($file->getId(),'alt')}}">Alt</label>--}}
+                                {{--                            <input class="form-control" name="{{$field->getAttributeFormName($file->getId(),'alt')}}" value="{{$file->getAlt()}}">--}}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                @endif
             @endforeach
         </div>
     @endif
-    <input type="file" @if($field->getMultiple()) multiple
-           @endif class="form-control @error($field->getName()) is-invalid @enderror" id="{{$field->getName()}}"
-           name="{{$field->getFormName()}}">
-    <div id="uploadImagesList{{$field->getName()}}">
-        <div class="item template">
-                        <span class="img-wrap" style="height: 225px; width: 100%; display: block;">
-                            <img src="image.jpg" alt="Превьюшка" style="border-radius: 15px;height: 225px; width: 50%; display: block;">
-                        </span>
-            <span class="delete-link" title="Удалить" style="cursor: pointer">Удалить</span>
-        </div>
+    <div>
+        <span id="files-counter-{{$field->getName()}}">Файлов загружено: 0</span>
     </div>
-    @error($field->getName())
+    <div id="hidden-inputs-container-{{$field->getName()}}" style="display:none;"></div>
+    <input type="hidden" name="{{$field->getName()}}_file_ids_to_delete" value="">
+    <div class="dropzone-container dropzone" id="container-{{$field->getName()}}">
+        <input type="file" @if($field->getMultiple()) multiple
+               @endif class="form-control @error($field->getName()) is-invalid @enderror"
+               name="{{$field->getFormName()}}" id="{{$field->getName()}}"
+               data-accepted-files="@if($field->getName() === "video") video/*@else image/* ,application/pdf @endif">
+        @error($field->getName())
+    </div>
     <div class="invalid-feedback">
         {{ $message }}
     </div>
     @enderror
 </div>
+
 <script>
-    jQuery(document).ready(function ($) {
+    Dropzone.autoDiscover = false;
 
-        var queue = {};
-        var files;
-        var filesForReplace;
-        var imagesList = $("#uploadImagesList{{$field->getName()}}");
+    document.addEventListener("DOMContentLoaded", function () {
 
-        var itemPreviewTemplate = imagesList.find('.item.template').clone();
-        itemPreviewTemplate.removeClass('template');
-        imagesList.find('.item.template').remove();
+        let uniqueId = "{{$field->getName()}}";
+        let fieldName = "container-" + uniqueId;
+        let fileInput = document.getElementById(fieldName);
+        let allFileIdsForHiddenInput = [];
+        let allFilesForHiddenInput = [];
 
-        $("#{{$field->getName()}}").on('change', function() {
-            files = $(this).prop('files');
-            filesForReplace = files;
 
-            for (var i = 0; i < files.length; i++) {
-                preview(files[i]);
-            }
-        });
+        if (fileInput) {
+            let formName = "<?= $field->getFormName() ?>";
+            let isMultiple = <?= $field->getMultiple() ? 'true' : 'false' ?>;
+            let dropzoneOptions = {
+                url: '{{ route('file.store') }}', // Update with the URL where the files should be uploaded
+                paramName: formName,
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                maxFilesize: 15, // MB
+                acceptedFiles: fileInput.getAttribute('data-accepted-files'),
+                addRemoveLinks: true,
+                dictDefaultMessage: "Drag and drop files here or click to select",
+                createImageThumbnails: true,
+                previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-image"><img data-dz-thumbnail /></div><div class="dz-details"><div class="dz-size"><span data-dz-size></span></div><div class="dz-filename"><span data-dz-name></span></div></div><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div><div class="dz-error-message"><span data-dz-errormessage></span></div><div class="dz-success-mark"><span class="dz-success-mark-svg"></span></div><div class="dz-error-mark"><span class="dz-error-mark-svg"></span></div></div>',
+                init: function () {
+                    let filesCounter = document.getElementById("files-counter-{{$field->getName()}}");
+                    let filesCount = 0;
+                    // Add any additional initialization code if required
+                    this.on("addedfile", function (file) {
+                    });
+                    console.log('success init');
+                    console.log(allFilesForHiddenInput);
 
-        // Создание превью
-        function preview(file) {
-            var reader = new FileReader();
-            reader.addEventListener('load', function(event) {
-                var img = document.createElement('img');
+                    this.on("success", function(file, response) {
+                        filesCount++;
+                        filesCounter.textContent = "Файлов загружено: " + filesCount;
+                        // console.log(response);
 
-                var itemPreview = itemPreviewTemplate.clone();
+                        let hiddenInputsContainer = document.getElementById("hidden-inputs-container-{{$field->getName()}}");
+                        let hiddenInput = document.createElement("input");
+                        hiddenInput.type = "hidden";
 
-                itemPreview.find('.img-wrap img').attr('src', event.target.result);
-                itemPreview.data('id', file.name);
+                        if (isMultiple) {
+                            hiddenInput.name = "{{$field->getName()}}_file_ids[]"; // Update this name according to your needs
+                            let { id,name } = response[0];
+                            allFileIdsForHiddenInput.push(id);
+                            allFilesForHiddenInput.push([id,name]);
+                            console.log(allFilesForHiddenInput);
+                            console.log("allFileIdsForHiddenInput",allFileIdsForHiddenInput);
+                            hiddenInput.value = allFileIdsForHiddenInput;
+                            // hiddenInput.value.push(Object.entries(response[0]));
+                            // console.log("response:    ", id);
+                            // console.log("response:    ", response[{ id }]);
+                            // console.log("response:    ", Object.entries(response[0]));
+                            {{--console.log("{{$field->getName()}}_file_ids[]:    ", hiddenInput.value);--}}
+                        } else {
+                            hiddenInput.name = "{{$field->getName()}}_file_id"; // Update this name according to your needs
+                            hiddenInput.value = response[0]["id"];
+                            console.log(hiddenInput.value);
+                        }
 
-                imagesList.append(itemPreview);
+                        if (hiddenInputsContainer.innerHTML === "") {
+                            // console.log(hiddenInput.value);
+                            hiddenInputsContainer.appendChild(hiddenInput);
+                        } else {
+                            // hiddenInputsContainer.parentNode.replaceChild(hiddenInput,hiddenInputsContainer);
+                            console.log("allFileIdsForHiddenInput:    ",allFileIdsForHiddenInput);
+                            document.querySelectorAll("input[name='{{$field->getName()}}_file_ids[]']")[0].value = allFileIdsForHiddenInput;
+                            console.log(".value:    ",document.querySelectorAll("input[name='{{$field->getName()}}_file_ids[]']")[0].value);
+                        }
 
-                queue[file.name] = file;
-            });
-            reader.readAsDataURL(file);
-        }
+                        // console.log("success");
+                    });
 
-        // Удаление фотографий
-        imagesList.on('click', '.delete-link', function () {
-            var item = $(this).closest('.item'),
-                id = item.data('id');
+                    this.on("removedfile", function(file) {
 
-            delete queue[id];
+                        if (isMultiple) {
+                            console.log(file.name)
+                            //
+                            let indexOfFileRemoveFromAttach = allFilesForHiddenInput.findIndex(function (element) {
+                                return element[1] === file.name;
+                            });
+                            let fileIdForRemoveAttach = allFilesForHiddenInput[indexOfFileRemoveFromAttach][0];
+                            console.log(fileIdForRemoveAttach);
+                            let index = allFileIdsForHiddenInput.indexOf(fileIdForRemoveAttach);
+                            if (index !== -1) {
+                                allFileIdsForHiddenInput.splice(index, 1);
+                                // console.log(allFileIdsForHiddenInput);
+                                document.querySelectorAll("input[name='{{$field->getName()}}_file_ids[]']")[0].value = allFileIdsForHiddenInput;
+                                {{--console.log("Log from remove method:  ",document.getElementsByName("{{$field->getName()}}_file_ids[]").value)--}}
+                            }
+                        } else {
+                            document.querySelectorAll("input[name='{{$field->getName()}}_file_id']")[0].value = "";
+                        }
+                        filesCount--;
+                        filesCounter.textContent = "Файлов загружено: " + filesCount;
+                    });
 
-            var input = document.getElementById('{{$field->getName()}}');
-
-            var dt = new DataTransfer();
-            filesForReplace = Object.entries(queue);
-            filesForReplace.forEach((file) => {
-                dt.items.add(file[1]);
-            })
-
-            input.files = dt.files;
-
-            item.remove();
-        });
-
-        $('body').on('submit',"form",function (e) {
-            e.preventDefault();
-
-            let $form = $(this);
-            let input = document.getElementById('{{$field->getName()}}');
-            var data = new FormData();
-            let modelId = "{{ array_values(request()->route()->originalParameters())[0] }}";
-            if(modelId.replace(/^\s+|\s+$/g, '')) {         // проверка на пустое поле
-                modelId = Number("{{ array_values(request()->route()->originalParameters())[0] }}");
-            }
-            for (let i = 0; i < input.files.length; i += 1) {
-                data.append('file'+ (i+1),input.files[i]);
-            }
-            data.append('modelId',modelId);
-
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            $.ajax({
-                method: "POST",
-                url: "{{ route('file.store') }}",
-                data: data,
-                dataType: 'json',
-                contentType: false,
-                processData: false,
-                cache: false,
-                beforeSend: function () {
+                    this.on("reset", function() {
+                        filesCount = 0;
+                        filesCounter.textContent = "Файлов загружено: " + filesCount;
+                    });
                 },
-                success: function (responseData) {
-                    $('#success-form-alert').show();
-                    setTimeout(() => {
-                        $('#success-form-alert').hide();
-                        $('body').off('submit');
-                        $form.submit();
-                    }, 300000);
-                    $('body').off('submit');
-                    $form.submit();
+                success: function (file, response) {
+                    // Handle successful uploads
+                    console.log('success');
+                    // console.log(response);
+                },
+                error: function (file, response) {
+                    // Handle errors during the upload
                 }
-            }).done(function (data) {
-            }).fail(function (data) {
-            });
-        });
+            };
+
+            if (isMultiple) {
+                dropzoneOptions["maxFiles"] = null;
+            } else {
+                dropzoneOptions["maxFiles"] = 1;
+            }
+
+            new Dropzone(fileInput, dropzoneOptions);
+        }
     });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let deleteButtons = document.querySelectorAll(".delete-file-{{$field->getName()}}");
+        for (let i = 0; i < deleteButtons.length; i++) {
+            deleteButtons[i].addEventListener("click", function (event) {
+                event.preventDefault();
+                // event.stopPropagation();
+                let fileId = this.getAttribute("data-file-id");
+                // let fileId = response[0].id;
+                let fileIdsToDelete = document.getElementsByName("{{$field->getName()}}_file_ids_to_delete")[0];
+                if (!fileIdsToDelete.value) {
+                    fileIdsToDelete.value += fileId;
+                } else {
+                    fileIdsToDelete.value += "," + fileId;
+                }
+                let hideCard = document.getElementById('{{$field->getName()}}-' + fileId);
+                hideCard.style.display = 'none';
+            });
+        }
+    });
+
 </script>

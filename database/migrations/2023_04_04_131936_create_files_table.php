@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('alt')->nullable();
             $table->text('uid')->nullable();
             $table->text('name')->nullable();
+            $table->text('ext')->nullable();
+            $table->text('inputFieldName')->nullable();
             $table->softDeletes();
         });
     }

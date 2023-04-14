@@ -15,7 +15,12 @@
     <script src="/admin_assets/libs/select2/select2.full.min.js"></script>
     <script src="/admin_assets/libs/select2/ru.js"></script>
 
-
+    <!-- JS библиотеки Dropzone -->
+{{--    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>--}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+    <!-- CSS библиотеки Dropzone -->
+{{--    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />--}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
 
     <style>
         .bd-placeholder-img {

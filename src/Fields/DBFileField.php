@@ -47,14 +47,19 @@ class DBFileField extends BaseField
         return $this->removeRoute;
     }
 
-    public function getRemovePath(File $file)
-    {
-        return route($this->removeRoute, ['modelId' => $this->model->id, 'field' => $this->name, 'id' => $file->getId()]);
-    }
+//    public function getRemovePath(File $file)
+//    {
+//        return route($this->removeRoute, ['modelId' => $this->model->id, 'field' => $this->name, 'id' => $file->getId()]);
+//    }
 
     public function getMultiple()
     {
         return $this->multiple;
+    }
+
+    public function getModel()
+    {
+        return $this->model;
     }
 
     public function getDetailValue()

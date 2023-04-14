@@ -11,3 +11,4 @@
         <button type="submit" class="btn btn-primary">Сохранить</button>
         <a href="{{$form->getBack()}}" role="button" class="btn btn-info">Отменить</a>
     </form>
+{{--    <script>Dropzone.autoDiscover = false;</script>--}}
