@@ -147,12 +147,15 @@ class BaseAdminResourceController extends Controller
         $model = new $modelClass;
         $model->fill($request->validated());
         $this->beforeSave($request, $model);
-        if (method_exists($model, 'addFiles')) {
-            $model->addFiles($request->validated());
-        }
+//        if (method_exists($model, 'addFiles')) {
+//            $model->addFiles($request->validated());
+//        }
         $model->save();
-        if (method_exists($model, 'addRelations')) {
-            $model->addRelations($request->validated());
+//        if (method_exists($model, 'addRelations')) {
+//            $model->addRelations($request->validated());
+//        }
+        if (method_exists($model, 'addPolymorphRelations')) {
+            $model->addPolymorphRelations($request->validated());
         }
         return response()->redirectTo($this->getRoutes($model)['store']);
     }
@@ -190,7 +193,6 @@ class BaseAdminResourceController extends Controller
     public function update($id)
     {
         $request = app($this->request);
-//        dd(app()->get('request'));
         $modelClass = $this->modelClass;
         $model = $modelClass::query()->findOrFail($id);
         $model->fill($request->validated());

@@ -35,19 +35,12 @@ class FilesController extends Controller
 
     public function store(Request $request)
     {
-//        dd(request()->all());
-
         foreach (request()->all() as $files) {
-//            dd($files);
 
             if(is_array($files)) {
-//                $uploadedFiles = [];
-//                dd($files);
                 $inputFieldName = array_keys(request()->all())[0];
-//                dd($inputFieldName);
                 foreach ($files as $file) {
                     $uploadedFile = $this->storeFile($file, $inputFieldName);
-//                    $uploadedFiles[] = $uploadedFile;
                 }
 
                 return response()->json([$uploadedFile])->setStatusCode(201);
@@ -70,18 +63,6 @@ class FilesController extends Controller
 
     public function destroy(File $file)
     {
-//        dd(app()->get('request'));
-//        $modelClass = $this->modelClass;
-//        $model = $modelClass::query()->findOrFail($id);
         $file->delete();
-//        return ($backRoute ? response()->redirectTo($backRoute) : back());
     }
-
-//    public function destroy(Request $request)
-//    {
-//        $fileId = $request->input('file_id');
-//        $file = File::findOrFail($fileId);
-//        $file->delete();
-//        return response()->json(['success' => true])->setStatusCode(200);
-//    }
 }

@@ -6,7 +6,6 @@
  * @var \zedsh\tower\Forms\BaseForm $form
  */
 $detail = $field->getDetailValue();
-//dd($field->getModel()->files);
 ?>
 <div class="form-group">
     <label for="{{$field->getName()}}">{{$field->getTitle()}}</label>
@@ -15,8 +14,6 @@ $detail = $field->getDetailValue();
         <div class="row">
             @foreach($field->getModel()->files as $file)
                 @if($file->inputFieldName === $field->getName())
-                    {{--                @dd(url($file->path))--}}
-                    {{--            @dd($file)--}}
                     <div class="card text-center" style="width: 200px; margin: 10px;" id="{{$field->getName()}}-{{$file->id}}">
                         <a href="{{url($file->path)}}" target="_blank">
                             @if($file->isImage())
@@ -27,15 +24,8 @@ $detail = $field->getDetailValue();
                         </a>
                         <div class="card-body">
                             <p class="card-text">{{$file->name}}</p>
-                            {{--                        @if(!empty($field->getRemoveRoute()))--}}
-                            {{--                            <p><a href="{{$field->getRemovePath($file)}}" class="btn btn-danger">Удалить</a></p>--}}
-                            {{--                        @endif--}}
                             <p>
                                 <button class="btn btn-danger delete-file-{{$field->getName()}}" data-file-id="{{$file->id}}">Удалить</button>
-                                {{--                            <label for="{{$field->getAttributeFormName($file->getId(),'title')}}">Title</label>--}}
-                                {{--                            <input class="form-control" name="{{$field->getAttributeFormName($file->getId(),'title')}}" value="{{$file->getTitle()}}">--}}
-                                {{--                            <label for="{{$field->getAttributeFormName($file->getId(),'alt')}}">Alt</label>--}}
-                                {{--                            <input class="form-control" name="{{$field->getAttributeFormName($file->getId(),'alt')}}" value="{{$file->getAlt()}}">--}}
                             </p>
                         </div>
                     </div>
@@ -77,7 +67,7 @@ $detail = $field->getDetailValue();
             let formName = "<?= $field->getFormName() ?>";
             let isMultiple = <?= $field->getMultiple() ? 'true' : 'false' ?>;
             let dropzoneOptions = {
-                url: '{{ route('file.store') }}', // Update with the URL where the files should be uploaded
+                url: '{{ route('file.store') }}',
                 paramName: formName,
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 maxFilesize: 15, // MB
@@ -89,7 +79,6 @@ $detail = $field->getDetailValue();
                 init: function () {
                     let filesCounter = document.getElementById("files-counter-{{$field->getName()}}");
                     let filesCount = 0;
-                    // Add any additional initialization code if required
                     this.on("addedfile", function (file) {
                     });
                     console.log('success init');
@@ -98,36 +87,28 @@ $detail = $field->getDetailValue();
                     this.on("success", function(file, response) {
                         filesCount++;
                         filesCounter.textContent = "Файлов загружено: " + filesCount;
-                        // console.log(response);
 
                         let hiddenInputsContainer = document.getElementById("hidden-inputs-container-{{$field->getName()}}");
                         let hiddenInput = document.createElement("input");
                         hiddenInput.type = "hidden";
 
                         if (isMultiple) {
-                            hiddenInput.name = "{{$field->getName()}}_file_ids[]"; // Update this name according to your needs
+                            hiddenInput.name = "{{$field->getName()}}_file_ids[]";
                             let { id,name } = response[0];
                             allFileIdsForHiddenInput.push(id);
                             allFilesForHiddenInput.push([id,name]);
                             console.log(allFilesForHiddenInput);
                             console.log("allFileIdsForHiddenInput",allFileIdsForHiddenInput);
                             hiddenInput.value = allFileIdsForHiddenInput;
-                            // hiddenInput.value.push(Object.entries(response[0]));
-                            // console.log("response:    ", id);
-                            // console.log("response:    ", response[{ id }]);
-                            // console.log("response:    ", Object.entries(response[0]));
-                            {{--console.log("{{$field->getName()}}_file_ids[]:    ", hiddenInput.value);--}}
                         } else {
-                            hiddenInput.name = "{{$field->getName()}}_file_id"; // Update this name according to your needs
+                            hiddenInput.name = "{{$field->getName()}}_file_id";
                             hiddenInput.value = response[0]["id"];
                             console.log(hiddenInput.value);
                         }
 
                         if (hiddenInputsContainer.innerHTML === "") {
-                            // console.log(hiddenInput.value);
                             hiddenInputsContainer.appendChild(hiddenInput);
                         } else {
-                            // hiddenInputsContainer.parentNode.replaceChild(hiddenInput,hiddenInputsContainer);
                             console.log("allFileIdsForHiddenInput:    ",allFileIdsForHiddenInput);
                             document.querySelectorAll("input[name='{{$field->getName()}}_file_ids[]']")[0].value = allFileIdsForHiddenInput;
                             console.log(".value:    ",document.querySelectorAll("input[name='{{$field->getName()}}_file_ids[]']")[0].value);
@@ -140,7 +121,6 @@ $detail = $field->getDetailValue();
 
                         if (isMultiple) {
                             console.log(file.name)
-                            //
                             let indexOfFileRemoveFromAttach = allFilesForHiddenInput.findIndex(function (element) {
                                 return element[1] === file.name;
                             });
@@ -149,9 +129,7 @@ $detail = $field->getDetailValue();
                             let index = allFileIdsForHiddenInput.indexOf(fileIdForRemoveAttach);
                             if (index !== -1) {
                                 allFileIdsForHiddenInput.splice(index, 1);
-                                // console.log(allFileIdsForHiddenInput);
                                 document.querySelectorAll("input[name='{{$field->getName()}}_file_ids[]']")[0].value = allFileIdsForHiddenInput;
-                                {{--console.log("Log from remove method:  ",document.getElementsByName("{{$field->getName()}}_file_ids[]").value)--}}
                             }
                         } else {
                             document.querySelectorAll("input[name='{{$field->getName()}}_file_id']")[0].value = "";
@@ -166,12 +144,9 @@ $detail = $field->getDetailValue();
                     });
                 },
                 success: function (file, response) {
-                    // Handle successful uploads
                     console.log('success');
-                    // console.log(response);
                 },
                 error: function (file, response) {
-                    // Handle errors during the upload
                 }
             };
 
@@ -192,9 +167,7 @@ $detail = $field->getDetailValue();
         for (let i = 0; i < deleteButtons.length; i++) {
             deleteButtons[i].addEventListener("click", function (event) {
                 event.preventDefault();
-                // event.stopPropagation();
                 let fileId = this.getAttribute("data-file-id");
-                // let fileId = response[0].id;
                 let fileIdsToDelete = document.getElementsByName("{{$field->getName()}}_file_ids_to_delete")[0];
                 if (!fileIdsToDelete.value) {
                     fileIdsToDelete.value += fileId;

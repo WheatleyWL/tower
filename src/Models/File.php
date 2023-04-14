@@ -33,8 +33,6 @@ class File extends Model
     public function isImage()
     {
         $imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','webp'];
-//        dd(in_array($this->ext, $imageExtensions));
-//        $ext = pathinfo($this->path, PATHINFO_EXTENSION);
 
         return in_array($this->ext, $imageExtensions);
     }
