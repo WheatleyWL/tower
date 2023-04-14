@@ -18,7 +18,7 @@ class FilesController extends Controller
     public function storeFile($file, $inputFieldName) {
         $fileName = uniqid('', true) . '.' .$file->getClientOriginalExtension();
 
-        if (! Storage::disk('local')->put("files/{$fileName}", $file)) {
+        if (! Storage::put("files/{$fileName}", $file)) {
             return response()->json(['Success' => false])->setStatusCode(500);
         }
 
@@ -35,24 +35,20 @@ class FilesController extends Controller
 
     public function store(Request $request)
     {
-        foreach (request()->all() as $files) {
+        foreach (request()->all() as $field) {
+            $inputFieldName = array_keys(request()->all())[0];
 
-            if(is_array($files)) {
-                $inputFieldName = array_keys(request()->all())[0];
-                foreach ($files as $file) {
+            if(is_array($field)) {
+                foreach ($field as $file) {
                     $uploadedFile = $this->storeFile($file, $inputFieldName);
                 }
-
-                return response()->json([$uploadedFile])->setStatusCode(201);
             }
 
-            if($files instanceof UploadedFile) {
-                $inputFieldName = array_keys(request()->all())[0];
-                $uploadedFile = $this->storeFile($files,$inputFieldName);
-
-                return response()->json([$uploadedFile])->setStatusCode(201);
+            if($field instanceof UploadedFile) {
+                $uploadedFile = $this->storeFile($field,$inputFieldName);
             }
 
+            return response()->json([$uploadedFile])->setStatusCode(201);
         }
     }
 
