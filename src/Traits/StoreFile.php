@@ -6,6 +6,7 @@ namespace zedsh\tower\Traits;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use zedsh\tower\Models\File;
 
 trait StoreFile
 {
@@ -96,6 +97,24 @@ trait StoreFile
             && in_array($this->getFileAttributesField($field), $this->fileFields);
     }
 
+    public function storeFile($file, $inputFieldName) {
+        $fileName = uniqid('', true) . '.' .$file->getClientOriginalExtension();
+
+        if (! Storage::put("files/{$fileName}", $file)) {
+            return response()->json(['Success' => false])->setStatusCode(500);
+        }
+
+        $uploadedFile = new File();
+        $uploadedFile->path = Storage::path("files/{$fileName}");
+        $uploadedFile->name = $file->getClientOriginalName();
+        $uploadedFile->uid = $fileName;
+        $uploadedFile->ext = $file->getClientOriginalExtension();
+        $uploadedFile->inputFieldName = $inputFieldName;
+        $uploadedFile->save();
+
+        return $uploadedFile;
+    }
+
     public function addFiles($fields)
     {
         foreach ($fields as $name => $field) {
@@ -104,19 +123,19 @@ trait StoreFile
             }
 
             if(is_array($field) && $this->isFillableFileAttributesField($name)) {
-               $field_name = $this->getFileAttributesField($name);
-               $field_content = $this->{$field_name};
-               foreach ($field_content as &$file_item) {
-                   foreach ($field as $field_id => $field_attributes) {
-                       if($file_item['id'] === $field_id) {
-                          $file_item = $field_attributes + $file_item;
-                       }
-                   }
-               }
+                $field_name = $this->getFileAttributesField($name);
+                $field_content = $this->{$field_name};
+                foreach ($field_content as &$file_item) {
+                    foreach ($field as $field_id => $field_attributes) {
+                        if($file_item['id'] === $field_id) {
+                            $file_item = $field_attributes + $file_item;
+                        }
+                    }
+                }
 
-               unset($file_item);
+                unset($file_item);
 
-               $this->{$field_name} = $field_content;
+                $this->{$field_name} = $field_content;
             }
 
             if ($field instanceof UploadedFile && $this->isFillableFileField($name)) {

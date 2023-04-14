@@ -11,27 +11,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use zedsh\tower\Models\File;
+use zedsh\tower\Traits\StoreFile;
 
 
 class FilesController extends Controller
 {
-    public function storeFile($file, $inputFieldName) {
-        $fileName = uniqid('', true) . '.' .$file->getClientOriginalExtension();
-
-        if (! Storage::put("files/{$fileName}", $file)) {
-            return response()->json(['Success' => false])->setStatusCode(500);
-        }
-
-        $uploadedFile = new File();
-        $uploadedFile->path = Storage::path("files/{$fileName}");
-        $uploadedFile->name = $file->getClientOriginalName();
-        $uploadedFile->uid = $fileName;
-        $uploadedFile->ext = $file->getClientOriginalExtension();
-        $uploadedFile->inputFieldName = $inputFieldName;
-        $uploadedFile->save();
-
-        return $uploadedFile;
-    }
+    use StoreFile;
 
     public function store(Request $request)
     {
