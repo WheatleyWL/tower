@@ -8,16 +8,7 @@ use zedsh\tower\Base\File;
 class DBFileField extends BaseField
 {
     protected $multiple = false;
-    protected $template = 'tower::fields.file';
-    protected $removeRoute;
-
-
-    public function setRemoveRoute($route)
-    {
-        $this->removeRoute = $route;
-
-        return $this;
-    }
+    protected $template = 'tower::fields.dropzone-file';
 
     public function setMultiple($value = true)
     {
@@ -36,22 +27,6 @@ class DBFileField extends BaseField
         return $name;
     }
 
-    public function getAttributeFormName($id, $attribute)
-    {
-        $name = $this->getName();
-        return $name . '_attributes[' . $id . '][' . $attribute . ']';
-    }
-
-    public function getRemoveRoute()
-    {
-        return $this->removeRoute;
-    }
-
-//    public function getRemovePath(File $file)
-//    {
-//        return route($this->removeRoute, ['modelId' => $this->model->id, 'field' => $this->name, 'id' => $file->getId()]);
-//    }
-
     public function getMultiple()
     {
         return $this->multiple;
@@ -62,19 +37,4 @@ class DBFileField extends BaseField
         return $this->model;
     }
 
-    public function getDetailValue()
-    {
-        $value = $this->model->{$this->name};
-        if (empty($value)) {
-            return [];
-        }
-
-
-        $ret = [];
-        foreach ($value as $item) {
-            $ret[] = new File($item['id'], $item['path'], $item['name'], $item['title'] ?? '', $item['alt'] ?? '');
-        }
-
-        return $ret;
-    }
 }

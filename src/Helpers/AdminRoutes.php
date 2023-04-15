@@ -5,13 +5,13 @@ namespace zedsh\tower\Helpers;
 use Illuminate\Support\Facades\Route;
 
 
-class AdminAuth
+class AdminRoutes
 {
     public static $app_routes = array();
     public static $authRoutesIsPublished = false;
 
 
-    public static function routes(array $options = [], string $prefix, string $name_prefix)
+    public static function make(array $options = [], string $prefix, string $name_prefix)
     {
         if (!self::checkExistAuthRoutesInApp()) {
             Route::prefix($prefix)->name($name_prefix . '.')->middleware(['web'])->group(function () use ($options) {
@@ -30,6 +30,9 @@ class AdminAuth
                 if ($options['logout'] ?? true) {
                     Route::post('logout',
                         [\zedsh\tower\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+                }
+                if ($options['file'] ?? true) {
+                    Route::resource('file', \zedsh\tower\Controllers\FilesController::class);
                 }
             });
         }

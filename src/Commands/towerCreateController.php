@@ -16,11 +16,12 @@ class towerCreateController extends Command
 
     public $description = "Command for create Controller,Request,route for model and import auth routes in your application";
 
-    public static $authRoutesDefinition = "\zedsh\tower\Helpers\AdminAuth::routes(\n
+    public static $authRoutesDefinition = "\zedsh\tower\Helpers\AdminRoutes::make(\n
     [\n
         'login' => true,\n
         'register' => true,\n
         'logout' => true\n
+        'file' => true\n
     ],\n
     'admin',\n
     'admin'\n
@@ -129,7 +130,7 @@ class towerCreateController extends Command
     {
         $routesFile = file_get_contents(app_path() . '/../routes/web.php');
 
-        if (!(Str::contains($routesFile, 'AdminAuth::routes'))) {
+        if (!(Str::contains($routesFile, 'AdminRoutes::make'))) {
             file_put_contents(app_path() . "/../routes/web.php", self::$authRoutesDefinition, FILE_APPEND);
         }
     }
