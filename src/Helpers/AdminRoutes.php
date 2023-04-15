@@ -48,7 +48,8 @@ class AdminRoutes
 
         if (in_array('admin/login', self::$app_routes) &&
             in_array('admin/registration', self::$app_routes) &&
-            in_array('admin/logout', self::$app_routes)) {
+            in_array('admin/logout', self::$app_routes) &&
+            in_array('admin/file', self::$app_routes)) {
             self::$authRoutesIsPublished = true;
         }
 

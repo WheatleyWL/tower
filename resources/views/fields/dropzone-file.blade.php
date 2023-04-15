@@ -65,7 +65,7 @@
             let formName = "<?= $field->getFormName() ?>";
             let isMultiple = <?= $field->getMultiple() ? 'true' : 'false' ?>;
             let dropzoneOptions = {
-                url: '{{ route('file.store') }}',
+                url: '{{ route('admin.file.store') }}',
                 paramName: formName,
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 maxFilesize: 15, // MB
