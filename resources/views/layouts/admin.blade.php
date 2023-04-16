@@ -15,6 +15,8 @@
     <script src="/admin_assets/libs/select2/select2.full.min.js"></script>
     <script src="/admin_assets/libs/select2/ru.js"></script>
 
+    <!-- Dropzone -->
+    <script src="/admin_assets/js/dropzone-file.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
 
