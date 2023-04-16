@@ -1,4 +1,4 @@
-function initFileField(fieldName, formName, isMultiple, route, csrfToken) {
+function initDropzoneFileField(fieldName, formName, isMultiple, route, csrfToken) {
     Dropzone.autoDiscover = false;
 
     document.addEventListener("DOMContentLoaded", function () {
