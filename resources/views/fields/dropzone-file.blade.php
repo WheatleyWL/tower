@@ -49,7 +49,6 @@
     @enderror
 </div>
 
-@stack('dropzone-file-scripts')
 <script>
     initDropzoneFileField("{{$field->getName()}}", "{{$field->getFormName()}}", {{ $field->getMultiple() ? 'true' : 'false' }}, "{{ route('admin.file.store') }}", "{{ csrf_token() }}");
     initDeleteButtons("{{$field->getName()}}");
