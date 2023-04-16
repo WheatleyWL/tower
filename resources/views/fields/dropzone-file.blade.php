@@ -13,9 +13,9 @@
             @foreach($field->getModel()->files as $file)
                 @if($file->inputFieldName === $field->getName())
                     <div class="card text-center" style="width: 200px; margin: 10px;" id="{{$field->getName()}}-{{$file->id}}">
-                        <a href="{{url($file->path)}}" target="_blank">
+                        <a href="{{Storage::url($file->path)}}" target="_blank">
                             @if($file->isImage())
-                                <img src="{{url($file->path)}}" class="card-img-top" alt="{{url($file->path)}}" width="140px">
+                                <img src="{{Storage::url($file->path)}}" class="card-img-top" alt="{{url($file->path)}}" width="140px">
                             @else
                                 <i class="fa fa-file"></i>
                             @endif

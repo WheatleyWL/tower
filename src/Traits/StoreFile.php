@@ -3,6 +3,7 @@
 
 namespace zedsh\tower\Traits;
 
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -98,16 +99,19 @@ trait StoreFile
     }
 
     public function storeFile($file, $inputFieldName) {
-        $fileName = uniqid('', true) . '.' .$file->getClientOriginalExtension();
-
-        if (! Storage::put("files/{$fileName}", $file)) {
-            return response()->json(['Success' => false])->setStatusCode(500);
+        try {
+            $path = $file->store("files", 'public');
+        } catch (Exception $e) {
+            return response()->json([
+                'Success' => false,
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
         }
 
         $uploadedFile = new File();
-        $uploadedFile->path = Storage::path("files/{$fileName}");
+        $uploadedFile->path = $path;
         $uploadedFile->name = $file->getClientOriginalName();
-        $uploadedFile->uid = $fileName;
+        $uploadedFile->uid = $path;
         $uploadedFile->ext = $file->getClientOriginalExtension();
         $uploadedFile->inputFieldName = $inputFieldName;
         $uploadedFile->save();
