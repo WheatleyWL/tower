@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Admin\Traits;
+namespace zedsh\tower\Traits;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
