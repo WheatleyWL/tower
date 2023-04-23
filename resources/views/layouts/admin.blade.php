@@ -1,24 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>tower</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/admin_assets/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
     <link href="/admin_assets/css/flatpickr.min.css" rel="stylesheet">
     <link href="/admin_assets/css/style.css" rel="stylesheet">
     <link href="/admin_assets/libs/select2/select2.min.css" rel="stylesheet">
-    <script src="/admin_assets/js/jquery-3.6.3.min.js"></script>
-    <script src="/admin_assets/libs/select2/select2.full.min.js"></script>
-    <script src="/admin_assets/libs/select2/ru.js"></script>
+    <script defer src="/admin_assets/js/jquery-3.6.4.min.js"></script>
+    <script defer src="/admin_assets/libs/select2/select2.full.min.js"></script>
+    <script defer src="/admin_assets/libs/select2/ru.js"></script>
+
+    <script defer src="/admin_assets/js/tower.js"></script>
+    <script defer src="/admin_assets/js/components/theme.js"></script>
+    <script defer src="/admin_assets/js/components/dropzone.js"></script>
 
     <!-- Dropzone -->
-    <script src="/admin_assets/js/dropzone-file.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
+    <script defer src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" />
 
     <style>
         .bd-placeholder-img {
@@ -41,27 +45,43 @@
     <link href="/admin_assets/libs/fontawesome/css/all.css" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">tower</a>
-    <ul class="navbar-nav px-3">
+<header class="navbar navbar-expand navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <button class="btn p-2 m-0 d-md-none collapsed"
+            style="background-color: rgba(0, 0, 0, .25)"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#tower-sidebar-collapse"
+            aria-controls="tower-sidebar-collapse"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">tower</a>
+    <div class="d-flex flex-grow-1"></div>
+    <ul class="navbar-nav me-auto">
         <li class="nav-item text-nowrap">
-            <form id="logout-form" action="{{ route('admin.logout') }}" method="POST">
+            <form id="logout-form" action="{{ route('tower_admin::logout') }}" method="POST">
                 <button type="submit" class="btn btn-outline-light">Выход</button>
                 @csrf
             </form>
         </li>
+        <li class="nav-item ms-1 me-1">
+            <button class="btn btn-outline-secondary" type="button" id="tower_theme_switcher">
+                <i class="bi bi-moon-stars-fill" id="tower_theme_switcher_icon"></i>
+            </button>
+        </li>
     </ul>
-</nav>
+</header>
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <nav id="tower-sidebar-collapse" class="col-md-3 col-lg-2 d-md-block bg-body-secondary sidebar collapse">
             <div class="sidebar-sticky">
                 {!! $menu !!}
             </div>
         </nav>
 
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             @if (session('message'))
                 <div class="alert {{session('message')['class']}}">
                     {{ session('message')['text'] }}
@@ -73,13 +93,12 @@
 
 </div>
 
-<script src="/admin_assets/js/bootstrap.bundle.min.js"></script>
-<script src="/admin_assets/libs/tinymce/tinymce.min.js"></script>
-<script src="/admin_assets/js/slug.js"></script>
-<script src="/admin_assets/js/flatpickr.js"></script>
-<script src="/admin_assets/js/flatpickr_ru.js"></script>
+<script defer src="/admin_assets/js/bootstrap.bundle.min.js"></script>
+<script defer src="/admin_assets/libs/tinymce/tinymce.min.js"></script>
+<script defer src="/admin_assets/js/slug.js"></script>
+<script defer src="/admin_assets/js/flatpickr.js"></script>
+<script defer src="/admin_assets/js/flatpickr_ru.js"></script>
 <script>
-
     tinymce.init({
         selector: '.mce', plugins: ['lists','link','code','table'],
         toolbar: 'numlist bullist link code',

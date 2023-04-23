@@ -3,7 +3,6 @@
 
 namespace zedsh\tower\Models;
 
-use App\Models\News;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,14 +24,10 @@ class File extends Model
         'inputFieldName'
     ];
 
-    public function news()
+    public function isImage(): bool
     {
-        return $this->morphedByMany(News::class, 'attachable');
-    }
-
-    public function isImage()
-    {
-        $imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','webp'];
+        $imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief',
+            'jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','webp'];
 
         return in_array($this->ext, $imageExtensions);
     }

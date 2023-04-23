@@ -111,9 +111,7 @@ trait StoreFile
         $uploadedFile = new File();
         $uploadedFile->path = $path;
         $uploadedFile->name = $file->getClientOriginalName();
-        $uploadedFile->uid = $path;
-        $uploadedFile->ext = $file->getClientOriginalExtension();
-        $uploadedFile->inputFieldName = $inputFieldName;
+        $uploadedFile->extension = $file->getClientOriginalExtension();
         $uploadedFile->save();
 
         return $uploadedFile;

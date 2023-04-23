@@ -5,7 +5,7 @@
  */
 $collection = $field->getCollection();
 ?>
-<div class="form-group">
+<div class="form-group mb-3">
     <label for="{{$field->getName()}}">{{$field->getTitle()}}</label>
     <select class="form-control select2" id="{{$field->getName()}}"
             name="{{$field->getFormName()}}" {{($field->getMultiple() ? 'multiple' : '')}} {!! $field->getAjaxUrl() ? 'data-ajax-url="' . $field->getAjaxUrl() . '"' : '' !!}>

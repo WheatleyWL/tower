@@ -4,7 +4,9 @@
      */
     ?>
 
-    <h2>{{$form->getTitle()}}</h2>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h2>{{$form->getTitle()}}</h2>
+    </div>
     <form action="{{$form->getAction()}}" method="{{$form->getMethod()}}" enctype="{{$form->getEncType()}}">
         @csrf
         {!! $content !!}

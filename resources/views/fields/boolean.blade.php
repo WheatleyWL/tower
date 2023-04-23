@@ -3,7 +3,7 @@
  * @var \zedsh\tower\Fields\BooleanField $field
  */
 ?>
-<div class="form-group">
+<div class="form-group mb-3">
     <div class="form-check form-check-inline">
         <input type="hidden" name="{{$field->getName()}}" value="0">
         <input type="checkbox" class="form-check-input" id="{{$field->getName()}}"

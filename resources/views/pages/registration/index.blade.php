@@ -8,7 +8,7 @@
                     <div class="card-header">Регистрация</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('admin.registration') }}">
+                        <form method="POST" action="{{ route('tower_admin::registration') }}">
                             @csrf
 
                             <div class="form-group row">

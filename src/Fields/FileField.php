@@ -7,17 +7,12 @@ use zedsh\tower\Base\File;
 
 class FileField extends BaseField
 {
-    protected $multiple = false;
-    protected $template = 'tower::fields.file';
-    protected $removeRoute;
+    protected bool $multiple = false;
+    protected int $maxFileSize = 0;
+    protected int $maxFileCount = 0;
+    protected array $allowedFileTypes = [];
 
-
-    public function setRemoveRoute($route)
-    {
-        $this->removeRoute = $route;
-
-        return $this;
-    }
+    protected $template = 'tower::fields.dropzone-file';
 
     public function setMultiple($value = true)
     {
@@ -36,40 +31,55 @@ class FileField extends BaseField
         return $name;
     }
 
-    public function getAttributeFormName($id, $attribute)
-    {
-        $name = $this->getName();
-        return $name . '_attributes[' . $id . '][' . $attribute . ']';
-    }
-
-    public function getRemoveRoute()
-    {
-        return $this->removeRoute;
-    }
-
-    public function getRemovePath(File $file)
-    {
-        return route($this->removeRoute, ['modelId' => $this->model->id, 'field' => $this->name, 'id' => $file->getId()]);
-    }
-
     public function getMultiple()
     {
         return $this->multiple;
     }
 
-    public function getDetailValue()
+    public function getModel()
     {
-        $value = $this->model->{$this->name};
-        if (empty($value)) {
-            return [];
+        return $this->model;
+    }
+
+    /**
+     * Set maximum file size to be uploaded (in kilobytes).
+     * @param int $maxFileSize
+     * @return $this
+     */
+    public function setMaxFileSize(int $maxFileSize): self
+    {
+        $this->maxFileSize = $maxFileSize;
+        return $this;
+    }
+
+    public function getMaxFileSize(): int
+    {
+        return $this->maxFileSize;
+    }
+
+    public function setMaxFileCount(int $maxFileCount): self
+    {
+        $this->maxFileCount = $maxFileCount;
+        return $this;
+    }
+
+    public function getMaxFileCount(): int
+    {
+        if(!$this->getMultiple()) {
+            return 1;
         }
 
+        return $this->maxFileCount;
+    }
 
-        $ret = [];
-        foreach ($value as $item) {
-            $ret[] = new File($item['id'], $item['path'], $item['name'], $item['title'] ?? '', $item['alt'] ?? '');
-        }
+    public function setAllowedFileTypes(array $fileTypes): self
+    {
+        $this->allowedFileTypes = $fileTypes;
+        return $this;
+    }
 
-        return $ret;
+    public function getAllowedFileTypes(): array
+    {
+        return $this->allowedFileTypes;
     }
 }

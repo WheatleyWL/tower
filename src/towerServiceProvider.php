@@ -3,6 +3,7 @@
 namespace zedsh\tower;
 
 use Illuminate\Support\ServiceProvider;
+use zedsh\tower\Base\GlobalContext;
 use zedsh\tower\Commands\towerCreateController;
 use zedsh\tower\Commands\towerInstall;
 
@@ -36,6 +37,9 @@ class towerServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->app->singleton('tower_admin::global_context', function() {
+            return new GlobalContext();
+        });
     }
 
     public function provides()

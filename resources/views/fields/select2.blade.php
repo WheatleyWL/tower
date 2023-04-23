@@ -5,13 +5,13 @@
  */
 $collection = $field->getCollection();
 ?>
-<div class="form-group">
+<div class="form-group mb-3">
     <label for="{{$field->getName()}}">{{$field->getTitle()}}</label>
     <select class="form-control select2" id="{{$field->getName()}}"
             name="{{$field->getFormName()}}" {{($field->getMultiple() ? 'multiple' : '')}} {!! $field->getAjaxUrl() ? 'data-ajax-url="' . $field->getAjaxUrl() . '"' : '' !!}>
 
         @if($collection)
-            @if($collection instanceof \Illuminate\Database\Eloquent\Collection)
+            @if($collection instanceof \Illuminate\Support\Collection)
                 @foreach($collection as $item)
                     <option
                         value="{{$item->{$field->getId()} }}" {{($field->isSelected($item->{$field->getId()}) ? 'selected' : '')}}>{{ $item->{$field->getShowField()} }}</option>

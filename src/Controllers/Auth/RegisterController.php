@@ -26,6 +26,6 @@ class RegisterController extends Controller
         $user->password = Hash::make($user->password);
         $user->saveOrFail();
 
-        return redirect(route('admin.login'));
+        return redirect(route('tower_admin::login'));
     }
 }
