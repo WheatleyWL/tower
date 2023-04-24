@@ -163,7 +163,7 @@ class AdminRoutesBuilder
                 break;
 
             case self::ROUTE_FILE:
-                Route::resource('file', FilesController::class);
+                Route::resource('file', FilesController::class)->only(['store', 'update', 'destroy']);
                 break;
 
             default:

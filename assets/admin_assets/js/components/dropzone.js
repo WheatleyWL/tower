@@ -12,8 +12,12 @@ let TowerDropZone = {
             return;
         }
 
+        let inputContainer = block.querySelector('.js-input-container');
         let dzPreviews = dzContainer.querySelector('.dropzone-previews');
-        let dzInfoLine = block.querySelector('.js-info-line');
+
+        let dzInfoCount = block.querySelector('.js-info-line .js-file-count .js-display');
+        let dzInfoSize = block.querySelector('.js-info-line .js-file-size .js-display');
+        let dzInfoTypes = block.querySelector('.js-info-line .js-file-types .js-display');
 
         let fieldName = block.getAttribute('data-field-name')
         let storeUrl = block.getAttribute('data-store-url')
@@ -29,7 +33,6 @@ let TowerDropZone = {
             url: storeUrl,
             headers: { 'X-CSRF-TOKEN': csrf },
             addRemoveLinks: false,
-            dictDefaultMessage: "Drag and drop files here or click to select",
             createImageThumbnails: true,
             previewsContainer: dzPreviews,
             previewTemplate: template.innerHTML,
@@ -50,42 +53,102 @@ let TowerDropZone = {
         }
 
         let dz = new Dropzone('div#' + dzContainer.id, config);
+
+        dz.insertInputField = function(value, tag) {
+            let input = document.createElement('input');
+            input.setAttribute('type', 'hidden');
+            input.setAttribute('name', fieldName + '[]');
+            input.setAttribute('data-tag', tag);
+            input.setAttribute('value', value);
+            inputContainer.append(input);
+        };
+
         dz.updateInfoLine = function() {
             let fileCount = dz.files.filter(function(i) { return i.accepted; }).length;
-            let text = `Files attached: ${fileCount}`
 
+            let countText = `${fileCount}`;
             if(config.maxFiles) {
-                text += `/${config.maxFiles}`;
+                countText += `/${config.maxFiles}`;
             }
 
+            dzInfoCount.innerHTML = countText;
+
             if(config.maxFilesize) {
-                text += ` | Max file size: ${this.filesize(config.maxFilesize * 1024 * 1024)}`;
+                dzInfoSize.parentNode.classList.remove('d-none');
+                dzInfoSize.innerHTML = this.filesize(config.maxFilesize * 1024 * 1024);
             }
 
             if(config.acceptedFiles) {
                 let niceList = config.acceptedFiles.split(',').join(', ');
-                text += ` | Allowed file types: ${niceList}`;
-            }
 
-            dzInfoLine.innerHTML = text;
+                dzInfoTypes.parentNode.classList.remove('d-none');
+                dzInfoTypes.innerHTML = niceList;
+            }
         };
 
-        dz.updateInfoLine();
+        dz.initPreFilledFiles = function() {
+            let preFills = inputContainer.querySelectorAll('.js-pre-fill');
+            preFills.forEach(function(element) {
+                let descr = {
+                    id: element.getAttribute('data-id'),
+                    name: element.getAttribute('data-name'),
+                    size: element.getAttribute('data-size'),
+                    url: element.getAttribute('data-url'),
+                };
+
+                let file = {
+                    name: descr.name,
+                    size: parseInt(descr.size),
+                    accepted: true,
+                    upload: {
+                        uuid: descr.id,
+                    },
+                };
+                dz.displayExistingFile(file, descr.url);
+                dz.files.push(file);
+
+                dz.insertInputField(descr.id, file.upload.uuid);
+
+                element.remove();
+            });
+
+            if(preFills.length > 0) {
+                dzPreviews.classList.remove('d-none');
+            }
+        }
 
         dz.on('addedfile', function(file) {
             dzPreviews.classList.remove('d-none');
+
+            let input = inputContainer.querySelector(`input[data-tag="empty"]`);
+            if(input) {
+                input.remove();
+            }
         });
 
         dz.on('removedfile', function(file) {
             dz.updateInfoLine();
+
+            let input = inputContainer.querySelector(`input[data-tag="${file.upload.uuid}"]`);
+            if(input) {
+                input.remove();
+            }
         });
 
         dz.on('reset', function(file) {
             dzPreviews.classList.add('d-none');
+
+            dz.insertInputField('', 'empty');
         });
 
         dz.on('success', function(file) {
-            file.previewElement.querySelector('.js-file-controls').classList.remove('d-none');
+            let responseObj = JSON.parse(file.xhr.response);
+            if(!responseObj) {
+                console.warn('[TowerAdmin] Invalid file upload response: unable to parse JSON.');
+                return;
+            }
+
+            dz.insertInputField(responseObj.id, file.upload.uuid);
         });
 
         dz.on('error', function(file, data) {
@@ -103,8 +166,14 @@ let TowerDropZone = {
 
         dz.on('complete', function(file) {
             file.previewElement.querySelector('.js-file-upload-progress').classList.add('d-none');
+            if(file.accepted && file.status !== 'error') {
+                file.previewElement.querySelector('.js-file-controls').classList.remove('d-none');
+            }
 
             dz.updateInfoLine();
         });
+
+        dz.initPreFilledFiles();
+        dz.updateInfoLine();
     }
 };

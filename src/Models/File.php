@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class File extends Model
 {
-    use HasFactory, softDeletes;
+    use HasFactory;
 
     protected $table = 'files';
 
@@ -24,12 +24,34 @@ class File extends Model
         'inputFieldName'
     ];
 
+    protected $appends = [
+        'edit_url',
+        'delete_url',
+    ];
+
     public function isImage(): bool
     {
         $imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief',
             'jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','webp'];
 
-        return in_array($this->ext, $imageExtensions);
+        return in_array($this->extension, $imageExtensions);
     }
 
+    public function getEditUrlAttribute(): ?string
+    {
+        if(!$this->exists) {
+            return null;
+        }
+
+        return route('tower_admin::file.update', ['file' => $this->id]);
+    }
+
+    public function getDeleteUrlAttribute(): ?string
+    {
+        if(!$this->exists) {
+            return null;
+        }
+
+        return route('tower_admin::file.destroy', ['file' => $this->id]);
+    }
 }

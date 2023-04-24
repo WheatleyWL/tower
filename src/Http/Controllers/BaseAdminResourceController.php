@@ -14,6 +14,7 @@ use zedsh\tower\Lists\Columns\ActionsColumn;
 use zedsh\tower\Lists\TableList;
 use zedsh\tower\Templates\BaseTemplate;
 use Illuminate\Support\Facades\Hash;
+use zedsh\tower\Traits\ContainsFiles;
 use function app;
 use function back;
 use function response;
@@ -143,20 +144,19 @@ class BaseAdminResourceController extends Controller
     public function store()
     {
         $request = app($this->request);
-        $modelClass = $this->modelClass;
-        $model = new $modelClass;
-        $model->fill($request->validated());
+        $data = $request->validated();
+
+        $model = new $this->modelClass;
+        $model->fill($data);
+
         $this->beforeSave($request, $model);
-//        if (method_exists($model, 'addFiles')) {
-//            $model->addFiles($request->validated());
-//        }
         $model->save();
-//        if (method_exists($model, 'addRelations')) {
-//            $model->addRelations($request->validated());
-//        }
-        if (method_exists($model, 'addPolymorphRelations')) {
-            $model->addPolymorphRelations($request->validated());
+
+        if(method_exists($model, 'syncFileFields')) {
+            /** @var $model ContainsFiles */
+            $model->syncFileFields($data);
         }
+
         return response()->redirectTo($this->getRoutes($model)['store']);
     }
 
@@ -193,20 +193,17 @@ class BaseAdminResourceController extends Controller
     public function update($id)
     {
         $request = app($this->request);
-        $modelClass = $this->modelClass;
-        $model = $modelClass::query()->findOrFail($id);
-        $model->fill($request->validated());
-        $this->beforeSave($request, $model);
+        $data = $request->validated();
 
-//        if (method_exists($model, 'addFiles')) {
-//            $model->addFiles($request->validated());
-//        }
+        $model = $this->modelClass::query()->findOrFail($id);
+        $model->fill($data);
+
+        $this->beforeSave($request, $model);
         $model->save();
-//        if (method_exists($model, 'addRelations')) {
-//            $model->addRelations($request->validated());
-//        }
-        if (method_exists($model, 'addPolymorphRelations')) {
-            $model->addPolymorphRelations($request->validated());
+
+        if(method_exists($model, 'syncFileFields')) {
+            /** @var $model ContainsFiles */
+            $model->syncFileFields($data);
         }
 
         return response()->redirectTo($this->getRoutes($model)['update']);

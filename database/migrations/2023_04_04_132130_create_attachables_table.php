@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('attachables', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('file_id')->nullable();
-            $table->unsignedBigInteger('attachable_id')->nullable();
-            $table->text('attachable_type')->nullable();
+            $table->foreignId('file_id');
+            $table->foreignId('attachable_id');
+            $table->text('attachable_type');
+            $table->string('attachable_field');
 
             $table->foreign('file_id')->references('id')->on('files');
         });
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attachable');
+        Schema::dropIfExists('attachables');
     }
 };
