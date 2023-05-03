@@ -8,19 +8,26 @@ namespace zedsh\tower\Fields;
  */
 class FileField extends BaseField
 {
-    protected $template = 'tower::fields.dropzone-file';
+    protected $template = 'tower::fields.dropzone_file';
 
     protected bool $multiple = false;
     protected int $maxFileSize = 0;
     protected int $maxFileCount = 0;
     protected array $allowedFileTypes = [];
-    protected string $uploadUrl;
+
+    protected ?string $uploadUrl;
+    protected ?string $editUrl;
+
+    protected array $namedTemplateSlots = [
+        'dropzone_file_template' => 'tower::fields.dropzone_file_template',
+    ];
 
     public function __construct($name, $title = '')
     {
         parent::__construct($name, $title);
 
         $this->uploadUrl = route('tower_admin::file.store');
+        $this->editUrl = route('tower_admin::file.update', ['file' => ':id']);
     }
 
     /**
@@ -137,5 +144,30 @@ class FileField extends BaseField
     public function getUploadUrl(): string
     {
         return $this->uploadUrl;
+    }
+
+    /**
+     * Sets route to be called by the uploader to save changes to SEO data of the file.
+     * Use this if you need to override default file editing behaviour.
+     * Given route must contain `:id` template, like this:
+     * ```php
+     * route('tower_admin::file.update', ['file' => ':id'])
+     * ```
+     *
+     * @param string $editUrl
+     * @return $this
+     */
+    public function setEditUrl(string $editUrl): self
+    {
+        $this->editUrl = $editUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEditUrl(): string
+    {
+        return $this->editUrl;
     }
 }

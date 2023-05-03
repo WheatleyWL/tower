@@ -21,12 +21,13 @@ let TowerDropZone = {
 
         let fieldName = block.getAttribute('data-field-name')
         let storeUrl = block.getAttribute('data-store-url')
+        let editUrl = block.getAttribute('data-edit-url')
         let csrf = block.getAttribute('data-csrf')
         let maxFileSize = parseInt(block.getAttribute('data-max-file-size'))
         let maxFileCount = parseInt(block.getAttribute('data-max-file-count'))
         let allowedFiles = block.getAttribute('data-allowed-files')
 
-        let template = document.querySelector('#' + block.getAttribute('data-template-id'));
+        let template = document.querySelector('#dropzone_file_template');
 
         let config = {
             paramName: 'file',
@@ -58,7 +59,7 @@ let TowerDropZone = {
             let input = document.createElement('input');
             input.setAttribute('type', 'hidden');
             input.setAttribute('name', fieldName + '[]');
-            input.setAttribute('data-tag', tag);
+            input.setAttribute('data-twdz-tag', tag);
             input.setAttribute('value', value);
             inputContainer.append(input);
         };
@@ -94,6 +95,8 @@ let TowerDropZone = {
                     name: element.getAttribute('data-name'),
                     size: element.getAttribute('data-size'),
                     url: element.getAttribute('data-url'),
+                    title: element.getAttribute('data-title'),
+                    alt: element.getAttribute('data-alt'),
                 };
 
                 let file = {
@@ -102,6 +105,8 @@ let TowerDropZone = {
                     accepted: true,
                     upload: {
                         uuid: descr.id,
+                        title: descr.title,
+                        alt: descr.alt,
                     },
                 };
                 dz.displayExistingFile(file, descr.url);
@@ -120,7 +125,7 @@ let TowerDropZone = {
         dz.on('addedfile', function(file) {
             dzPreviews.classList.remove('d-none');
 
-            let input = inputContainer.querySelector(`input[data-tag="empty"]`);
+            let input = inputContainer.querySelector(`input[data-twdz-tag="empty"]`);
             if(input) {
                 input.remove();
             }
@@ -129,7 +134,7 @@ let TowerDropZone = {
         dz.on('removedfile', function(file) {
             dz.updateInfoLine();
 
-            let input = inputContainer.querySelector(`input[data-tag="${file.upload.uuid}"]`);
+            let input = inputContainer.querySelector(`input[data-twdz-tag="${file.upload.uuid}"]`);
             if(input) {
                 input.remove();
             }
@@ -168,6 +173,7 @@ let TowerDropZone = {
             file.previewElement.querySelector('.js-file-upload-progress').classList.add('d-none');
             if(file.accepted && file.status !== 'error') {
                 file.previewElement.querySelector('.js-file-controls').classList.remove('d-none');
+                TowerDropZone.setupSeoBox(fieldName, editUrl, file, csrf);
             }
 
             dz.updateInfoLine();
@@ -175,5 +181,76 @@ let TowerDropZone = {
 
         dz.initPreFilledFiles();
         dz.updateInfoLine();
-    }
+    },
+
+    setupSeoBox: function(fieldName, editUrl, file, csrf) {
+        let seobox = file.previewElement.querySelector(`.js-seobox`);
+        let seoboxBtn = file.previewElement.querySelector(`.js-seobox-btn`);
+
+        let titleField = seobox.querySelector('input[name="title"]');
+        let altField = seobox.querySelector('input[name="alt"]');
+
+        titleField.value = file.upload.title || '';
+        altField.value = file.upload.alt || '';
+
+        seobox.setAttribute('id', `tower_dropzone_${fieldName}_${file.upload.uuid}`);
+
+        seoboxBtn.setAttribute('data-bs-target', `#tower_dropzone_${fieldName}_${file.upload.uuid}`);
+        seoboxBtn.setAttribute('aria-controls', `tower_dropzone_${fieldName}_${file.upload.uuid}`);
+
+        seoboxBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            let state = this.getAttribute('aria-expanded') === 'true';
+            state = !state;
+            this.setAttribute('aria-expanded', state);
+
+            let collapse = bootstrap.Collapse.getOrCreateInstance(seobox);
+            let btnIcon = seoboxBtn.querySelector('.js-icon');
+
+            if(!state) {
+                let btnSpinner = seoboxBtn.querySelector('.js-spinner');
+
+                seoboxBtn.setAttribute('disabled', 'true');
+                btnSpinner.classList.remove('d-none');
+                btnIcon.classList.add('d-none');
+
+                let fileInput = document.querySelector(`input[data-twdz-tag="${file.upload.uuid}"]`);
+                let url = editUrl.replace(':id', fileInput.value);
+
+                let titleField = file.previewElement.querySelector('input[name="title"]');
+                let altField = file.previewElement.querySelector('input[name="alt"]');
+
+                $.ajax({
+                    type: 'PATCH',
+                    url: url,
+                    data: {
+                        title: titleField.value,
+                        alt: altField.value,
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': csrf,
+                    },
+                }).fail(function(err) {
+                    // TODO(wheatley): display a proper error to the user when we implement toast-alerts.
+                    console.warn(err);
+                }).always(function() {
+                    setTimeout(function() {
+                        seoboxBtn.removeAttribute('disabled');
+                        btnSpinner.classList.add('d-none');
+                        btnIcon.classList.remove('d-none');
+                        collapse.hide();
+                    }, 500);
+                });
+
+                btnIcon.classList.add('bi-pencil');
+                btnIcon.classList.remove('bi-check-lg');
+            } else {
+                collapse.show();
+
+                btnIcon.classList.add('bi-check-lg');
+                btnIcon.classList.remove('bi-pencil');
+            }
+        });
+    },
 };

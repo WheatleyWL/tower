@@ -93,6 +93,12 @@
 
 </div>
 
+@foreach(\zedsh\tower\Facades\TowerAdmin::getNamedTemplates() as $slotName => $view)
+    <template id="{{ $slotName  }}">
+        {{ view($view) }}
+    </template>
+@endforeach
+
 <script defer src="/admin_assets/js/bootstrap.bundle.min.js"></script>
 <script defer src="/admin_assets/libs/tinymce/tinymce.min.js"></script>
 <script defer src="/admin_assets/js/slug.js"></script>
