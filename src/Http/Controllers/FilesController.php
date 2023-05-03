@@ -1,6 +1,6 @@
 <?php
 
-namespace zedsh\tower\Controllers;
+namespace zedsh\tower\Http\Controllers;
 
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\UploadedFile;

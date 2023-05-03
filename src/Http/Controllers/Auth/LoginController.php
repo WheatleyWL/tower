@@ -1,6 +1,6 @@
 <?php
 
-namespace zedsh\tower\Controllers\Auth;
+namespace zedsh\tower\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;

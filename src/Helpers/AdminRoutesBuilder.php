@@ -4,10 +4,10 @@ namespace zedsh\tower\Helpers;
 
 use Closure;
 use Illuminate\Support\Facades\Route;
-use zedsh\tower\Controllers\Auth\LoginController;
-use zedsh\tower\Controllers\Auth\RegisterController;
-use zedsh\tower\Controllers\FilesController;
-use zedsh\tower\Controllers\HomeController;
+use zedsh\tower\Http\Controllers\Auth\LoginController;
+use zedsh\tower\Http\Controllers\Auth\RegisterController;
+use zedsh\tower\Http\Controllers\FilesController;
+use zedsh\tower\Http\Controllers\HomeController;
 use zedsh\tower\Exceptions\ConfigurationException;
 use zedsh\tower\Exceptions\TowerInternalException;
 

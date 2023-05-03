@@ -1,14 +1,14 @@
 <?php
 
 
-namespace zedsh\tower\Controllers;
+namespace zedsh\tower\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use zedsh\tower\Templates\BaseTemplate;
 
 class BaseAdminController extends BaseController
 {
-    protected $template;
+    protected BaseTemplate $template;
 
     protected function getTemplate()
     {

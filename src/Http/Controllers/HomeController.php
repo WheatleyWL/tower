@@ -1,6 +1,6 @@
 <?php
 
-namespace zedsh\tower\Controllers;
+namespace zedsh\tower\Http\Controllers;
 
 use zedsh\tower\Exceptions\TowerInternalException;
 use zedsh\tower\Facades\TowerAdmin;
