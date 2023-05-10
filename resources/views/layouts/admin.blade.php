@@ -81,7 +81,7 @@
             </div>
         </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mb-3">
             @if (session('message'))
                 <div class="alert {{session('message')['class']}}">
                     {{ session('message')['text'] }}
@@ -105,32 +105,29 @@
 <script defer src="/admin_assets/js/flatpickr.js"></script>
 <script defer src="/admin_assets/js/flatpickr_ru.js"></script>
 <script>
-    tinymce.init({
-        selector: '.mce', plugins: ['lists','link','code','table'],
-        toolbar: 'numlist bullist link code',
-        forced_root_block : "",
-        height : "480"
+    document.addEventListener('DOMContentLoaded', function() {
+        tinymce.init({
+            selector: '.mce', plugins: ['lists','link','code','table'],
+            toolbar: 'numlist bullist link code',
+            forced_root_block : "",
+            height : "250"
+        });
+
+        $(('[data-slug-from]')).each(function(){
+            var $original = $(this);
+            var id = $(this).data('slug-from');
+            $(document).on('keyup', '#' + id, function () {
+                $original.val(url_slug($(this).val()));
+            });
+        });
+
+        $('.date').flatpickr({
+            "locale": "ru",
+            "dateFormat": "d.m.Y"
+        });
+
+        $('.select2').select2();
     });
-</script>
-<script>
-    $(document).ready(
-        function(){
-            $(('[data-slug-from]')).each(function(){
-                var $original = $(this);
-                var id = $(this).data('slug-from');
-                $(document).on('keyup', '#' + id, function () {
-                    $original.val(url_slug($(this).val()));
-                });
-            });
-
-            $('.date').flatpickr({
-                "locale": "ru",
-                "dateFormat": "d.m.Y"
-            });
-
-            $('.select2').select2();
-        }
-    );
 </script>
 </body>
 </html>
