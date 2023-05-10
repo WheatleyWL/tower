@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \zedsh\tower\Fields\FileField $field
+ * @var \zedsh\tower\Fields\Default\FileField $field
  */
 /**
  * @var \zedsh\tower\Forms\BaseForm $form

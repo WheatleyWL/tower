@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \zedsh\tower\Fields\TextField $field
+ * @var \zedsh\tower\Fields\Default\TextField $field
  */
 ?>
 <div class="form-group mb-3">

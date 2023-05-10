@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \zedsh\tower\Fields\BooleanField $field
+ * @var \zedsh\tower\Fields\Default\BooleanField $field
  */
 ?>
 <div class="form-group mb-3">

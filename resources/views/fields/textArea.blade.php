@@ -1,8 +1,7 @@
 <?php
 /**
- * @var \zedsh\tower\Fields\TextAreaField $field
+ * @var \zedsh\tower\Fields\Default\TextAreaField $field
  */
-
 ?>
 <div class="form-group mb-3">
     <label for="{{$field->getName()}}">{{$field->getTitle()}}</label>

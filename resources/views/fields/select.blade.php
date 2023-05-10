@@ -1,7 +1,6 @@
 <?php
-
 /**
- * @var \App\Admin\Fields\Select2Field $field
+ * @var \zedsh\tower\Fields\Default\SelectField $field
  */
 $collection = $field->getCollection();
 ?>
