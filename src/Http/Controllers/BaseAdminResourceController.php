@@ -2,15 +2,16 @@
 
 namespace zedsh\tower\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use zedsh\tower\Facades\TowerAdmin;
 use zedsh\tower\Fields\HiddenField;
 use zedsh\tower\Forms\BaseForm;
 use zedsh\tower\Lists\Columns\ActionsColumn;
 use zedsh\tower\Lists\TableList;
-use zedsh\tower\Templates\BaseTemplate;
 use Illuminate\Support\Facades\Hash;
 use zedsh\tower\Traits\ContainsFiles;
 use function app;
@@ -18,7 +19,7 @@ use function back;
 use function response;
 use function route;
 
-class BaseAdminResourceController extends Controller
+class BaseAdminResourceController extends BaseAdminController
 {
     /** @var string|null classname of the Model which this resource operates on */
     protected ?string $modelClass = null;
@@ -121,26 +122,10 @@ class BaseAdminResourceController extends Controller
     }
 
     /**
-     * Renders the current admin page.
-     * @param $renderable
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     */
-    protected function render($renderable)
-    {
-        $projectTemplateClass = TowerAdmin::getProjectTemplateClass();
-        if(!empty($projectTemplateClass)) {
-            /** @var BaseTemplate|null $projectTemplateClass */
-            return $projectTemplateClass::renderView($renderable);
-        }
-
-        return BaseTemplate::renderView($renderable);
-    }
-
-    /**
      * Returns a query Builder used to fetch items for the index page.
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
-    protected function getListQuery(): \Illuminate\Database\Eloquent\Builder
+    protected function getListQuery(): Builder
     {
         /** @var Model $modelClass */
         $modelClass = $this->modelClass;
@@ -152,18 +137,17 @@ class BaseAdminResourceController extends Controller
      * This should not be overridden unless you really need to change the way it looks/works.
      * If you just need to add fields (columns), filters or actions to the index page, please, opt to use [actions],
      * [list] and [filters] methods provided by the class.
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Factory|View
      */
-    public function index(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
+    public function index(): View|Factory
     {
         $actionColumn = $this->actions();
         $otherColumns = $this->list();
         $filters = $this->filters();
 
         /** @var TableList $list */
-        $list = new $this->listClass($this->resourceName . '.list');
-
-        $list->setTitle($this->indexTitle)
+        $list = (new $this->listClass($this->resourceName . '.list'))
+            ->setTitle($this->indexTitle)
             ->setColumns([$actionColumn, ...$otherColumns])
             ->enableAdd()
             ->setFilters($filters)
@@ -179,16 +163,12 @@ class BaseAdminResourceController extends Controller
      * Renders the creation page.
      * This should not be overridden unless you really need to change the way it looks/works.
      * Please, opt to use [addEdit] method provided by the class.
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Factory|View
      */
-    public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory
+    public function create(): View|Factory
     {
-        $modelClass = $this->modelClass;
-        $model = new $modelClass;
-
-        $form = new $this->formClass($this->resourceName . '.form');
-
-        $form
+        $model = new $this->modelClass;
+        $form = (new $this->formClass($this->resourceName . '.form'))
             ->setTitle($this->createTitle)
             ->setAction(route($this->resourceName . '.store'))
             ->setEncType('multipart/form-data')
@@ -237,16 +217,14 @@ class BaseAdminResourceController extends Controller
      * This should not be overridden unless you really need to change the way it looks/works.
      * Please, opt to use [addEdit] method provided by the class.
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Factory|View
      */
-    public function edit($id)
+    public function edit($id): Factory|View
     {
-        $modelClass = $this->modelClass;
-        $model = $modelClass::query()->findOrFail($id);
+        $model = $this->modelClass::query()->findOrFail($id);
 
-        $form = new $this->formClass($this->resourceName . '.form');
-
-        $form
+        /** @var BaseForm $form */
+        $form = (new $this->formClass($this->resourceName . '.form'))
             ->setTitle($this->editTitle)
             ->setAction(route($this->resourceName . '.update',[$this->resourceName => $id]))
             ->setEncType('multipart/form-data')
@@ -262,8 +240,12 @@ class BaseAdminResourceController extends Controller
         return $this->render($form);
     }
 
-
-    public function update($id)
+    /**
+     * Updates existing model.
+     * @param $id
+     * @return RedirectResponse
+     */
+    public function update($id): Response
     {
         $request = app($this->request);
         $data = $request->validated();
@@ -282,15 +264,17 @@ class BaseAdminResourceController extends Controller
         return response()->redirectTo($this->getRoutes($model)['editBack']);
     }
 
-
-    public function destroy($id)
+    /**
+     * Deletes existing model.
+     * @param $id
+     * @return Response
+     */
+    public function destroy($id): Response
     {
-        $modelClass = $this->modelClass;
-        $model = $modelClass::query()->findOrFail($id);
+        $model = $this->modelClass::query()->findOrFail($id);
         $model->delete();
+
         $backRoute = $this->getRoutes($model)['editBack'] ?? null;
         return ($backRoute ? response()->redirectTo($backRoute) : back());
     }
-
-
 }
