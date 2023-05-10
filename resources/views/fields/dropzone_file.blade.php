@@ -5,6 +5,7 @@
 /**
  * @var \zedsh\tower\Forms\BaseForm $form
  */
+
 ?>
 <div class="form-group mb-3">
     <label for="{{$field->getName()}}">{{$field->getTitle()}}</label>
@@ -20,18 +21,16 @@
          aria-describedby="#{{$field->getName()}}-bs-feedback">
         <div class="js-input-container d-none">
             <input type="hidden" name="{{ $field->getName() }}[]" value="" data-tag="empty">
-            @if(!empty($field->getModel()->{$field->getName()}))
-                @foreach($field->getModel()->{$field->getName()} as $file)
-                    <div class="js-pre-fill"
-                         data-id="{{ $file->id }}"
-                         data-url="{{ \Illuminate\Support\Facades\Storage::url($file->path) }}"
-                         data-name="{{ $file->name }}"
-                         data-size="{{ $file->size }}"
-                         data-title="{{ $file->title }}"
-                         data-alt="{{ $file->alt }}"
-                    ></div>
-                @endforeach
-            @endif
+            @foreach($field->getValue() as $file)
+                <div class="js-pre-fill"
+                     data-id="{{ $file->id }}"
+                     data-url="{{ \Illuminate\Support\Facades\Storage::url($file->path) }}"
+                     data-name="{{ $file->name }}"
+                     data-size="{{ $file->size }}"
+                     data-title="{{ $file->title }}"
+                     data-alt="{{ $file->alt }}"
+                ></div>
+            @endforeach
         </div>
         <div class="js-dropzone-container row row-cols-1 align-items-center m-0 flex-grow-1 position-relative"
              style="cursor: pointer;"

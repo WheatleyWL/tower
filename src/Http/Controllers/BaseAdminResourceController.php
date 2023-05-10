@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use zedsh\tower\Fields\HiddenField;
+use zedsh\tower\Fields\Default\HiddenField;
 use zedsh\tower\Forms\BaseForm;
 use zedsh\tower\Lists\Columns\ActionsColumn;
 use zedsh\tower\Lists\TableList;

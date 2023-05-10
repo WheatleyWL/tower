@@ -1,14 +1,21 @@
 <?php
 
+namespace zedsh\tower\Fields\Default;
 
-namespace zedsh\tower\Fields;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Request;
+use zedsh\tower\Fields\BasicEditableFormField;
+use zedsh\tower\Models\File;
+use zedsh\tower\Traits\Fields\HasNamedTemplateSlots;
 
 /**
  * File upload field.
  */
-class FileField extends BaseField
+class FileField extends BasicEditableFormField
 {
-    protected $template = 'tower::fields.dropzone_file';
+    use HasNamedTemplateSlots;
+
+    protected string $template = 'tower::fields.dropzone_file';
 
     protected bool $multiple = false;
     protected int $maxFileSize = 0;
@@ -18,16 +25,28 @@ class FileField extends BaseField
     protected ?string $uploadUrl;
     protected ?string $editUrl;
 
-    protected array $namedTemplateSlots = [
-        'dropzone_file_template' => 'tower::fields.dropzone_file_template',
-    ];
-
-    public function __construct($name, $title = '')
+    /**
+     * @param $name
+     * @param string $title
+     */
+    public function __construct($name, string $title = '')
     {
         parent::__construct($name, $title);
 
+        $this->assignNamedTemplateSlots();
+
         $this->uploadUrl = route('tower_admin::file.store');
         $this->editUrl = route('tower_admin::file.update', ['file' => ':id']);
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getNamedTemplateSlots(): array
+    {
+        return [
+            'dropzone_file_template' => 'tower::fields.dropzone_file_template',
+        ];
     }
 
     /**
@@ -48,15 +67,6 @@ class FileField extends BaseField
     public function getMultiple(): bool
     {
         return $this->multiple;
-    }
-
-    /**
-     * Returns currently bound model. Returns empty model instance if field reside in 'Add' form.
-     * @return mixed
-     */
-    public function getModel()
-    {
-        return $this->model;
     }
 
     /**
@@ -169,5 +179,24 @@ class FileField extends BaseField
     public function getEditUrl(): string
     {
         return $this->editUrl;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getValue(): Collection
+    {
+        $oldValue = Request::old($this->name);
+        $modelValue = $this->model?->{$this->name};
+
+        if(!empty($oldValue)) {
+            if(!is_array($oldValue)) {
+                $oldValue = [$oldValue];
+            }
+
+            return File::query()->findMany($oldValue);
+        }
+
+        return $modelValue ?? collect();
     }
 }
