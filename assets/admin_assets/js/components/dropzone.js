@@ -187,8 +187,8 @@ let TowerDropZone = {
         let seobox = file.previewElement.querySelector(`.js-seobox`);
         let seoboxBtn = file.previewElement.querySelector(`.js-seobox-btn`);
 
-        let titleField = seobox.querySelector('input[name="title"]');
-        let altField = seobox.querySelector('input[name="alt"]');
+        let titleField = seobox.querySelector('input[name="file_title"]');
+        let altField = seobox.querySelector('input[name="file_alt"]');
 
         titleField.value = file.upload.title || '';
         altField.value = file.upload.alt || '';
@@ -218,8 +218,8 @@ let TowerDropZone = {
                 let fileInput = document.querySelector(`input[data-twdz-tag="${file.upload.uuid}"]`);
                 let url = editUrl.replace(':id', fileInput.value);
 
-                let titleField = file.previewElement.querySelector('input[name="title"]');
-                let altField = file.previewElement.querySelector('input[name="alt"]');
+                let titleField = file.previewElement.querySelector('input[name="file_title"]');
+                let altField = file.previewElement.querySelector('input[name="file_alt"]');
 
                 $.ajax({
                     type: 'PATCH',

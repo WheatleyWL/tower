@@ -60,7 +60,7 @@
     <div class="d-flex flex-grow-1"></div>
     <ul class="navbar-nav me-auto">
         <li class="nav-item text-nowrap">
-            <form id="logout-form" action="{{ route('tower_admin::logout') }}" method="POST">
+            <form id="logout-form" action="{{ route('tower::innate::logout') }}" method="POST">
                 <button type="submit" class="btn btn-outline-light">Выход</button>
                 @csrf
             </form>

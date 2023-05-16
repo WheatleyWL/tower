@@ -38,8 +38,8 @@
             </div>
             <div class="collapse position-absolute p-1 bg-body-secondary js-seobox"
                  style="left: 0; right: 0; bottom: 100%;">
-                <input class="form-control" type="text" name="title" placeholder="Title">
-                <input class="form-control mt-1" type="text" name="alt" placeholder="Alt">
+                <input class="form-control" type="text" name="file_title" placeholder="Title">
+                <input class="form-control mt-1" type="text" name="file_alt" placeholder="Alt">
             </div>
         </div>
     </div>

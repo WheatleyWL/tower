@@ -47,14 +47,11 @@
                     <!-- Authentication Links -->
                     @guest
                         <li class="nav-item" style="margin-right: 10px;">
-                            <a class="nav-link" href="{{ route('tower_admin::login') }}">Войти</a>
+                            <a class="nav-link" href="{{ route('tower::innate::login') }}">Войти</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('tower_admin::register') }}">Регистрация</a>
-                        </li>
-                        @if (Route::has('register'))
+                        @if (Route::has('tower::innate::register'))
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('tower_admin::register') }}">{{ __('Register') }}</a>
+                                <a class="nav-link" href="{{ route('tower::innate::register') }}">{{ __('Register') }}</a>
                             </li>
                         @endif
                     @else

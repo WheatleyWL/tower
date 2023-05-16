@@ -13,19 +13,18 @@ use zedsh\tower\Http\Requests\RegisterRequest;
 class RegisterController extends Controller
 {
 
-    public function showRegistrationForm()
+    public function show()
     {
         return view('tower::pages.registration.index');
     }
 
-
-    public function register(RegisterRequest $request)
+    public function submit(RegisterRequest $request)
     {
         $user = new User();
         $user->fill($request->only('name','email','password'));
         $user->password = Hash::make($user->password);
         $user->saveOrFail();
 
-        return redirect(route('tower_admin::login'));
+        return redirect(route('tower::innate::login'));
     }
 }

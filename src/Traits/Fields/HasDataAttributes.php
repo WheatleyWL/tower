@@ -11,6 +11,7 @@ trait HasDataAttributes
 {
     protected string $name;
     protected mixed $value;
+    protected mixed $defaultValue = null;
     protected object $model;
 
     /**
@@ -32,10 +33,10 @@ trait HasDataAttributes
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @return $this
      */
-    public function setValue($value): self
+    public function setValue(mixed $value): self
     {
         $this->value = $value;
         return $this;
@@ -47,7 +48,9 @@ trait HasDataAttributes
     public function getValue(): mixed
     {
         $oldValue = Request::old($this->name);
-        return ($oldValue !== null) ? $oldValue : ($this->value ?? $this->model?->{$this->name});
+        $defaultValue = $this->getDefaultValue();
+
+        return ($oldValue !== null) ? $oldValue : ($this->value ?? ($this->model?->{$this->name} ?? $defaultValue));
     }
 
     /**
@@ -66,5 +69,31 @@ trait HasDataAttributes
     public function getModel(): object
     {
         return $this->model;
+    }
+
+    /**
+     * @param mixed $value
+     * @return $this
+     */
+    public function setDefaultValue(mixed $value): self
+    {
+        $this->defaultValue = $value;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasDefaultValue(): bool
+    {
+        return $this->defaultValue !== null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultValue(): mixed
+    {
+        return $this->defaultValue;
     }
 }

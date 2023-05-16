@@ -11,16 +11,15 @@ use zedsh\tower\Http\Requests\LoginRequest;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
+    public function show()
     {
         return view('tower::pages.authorization.index');
     }
 
-
-    public function login(LoginRequest $request)
+    public function submit(LoginRequest $request)
     {
         if (Auth::attempt($request->only('email','password'), !empty($request->only('remember')))) {
-            return redirect()->route('admin');
+            return redirect()->route('tower::innate::home');
         }
 
         return redirect()->back()->withErrors([
@@ -31,6 +30,6 @@ class LoginController extends Controller
     public function logout() {
         Auth::logout();
 
-        return redirect()->route('tower_admin::login');
+        return redirect()->route('tower::innate::login');
     }
 }

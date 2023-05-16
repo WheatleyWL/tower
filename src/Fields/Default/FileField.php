@@ -35,8 +35,8 @@ class FileField extends BasicEditableFormField
 
         $this->assignNamedTemplateSlots();
 
-        $this->uploadUrl = route('tower_admin::file.store');
-        $this->editUrl = route('tower_admin::file.update', ['file' => ':id']);
+        $this->uploadUrl = route('tower::innate::file.store');
+        $this->editUrl = route('tower::innate::file.update', ['file' => ':id']);
     }
 
     /**
@@ -161,7 +161,7 @@ class FileField extends BasicEditableFormField
      * Use this if you need to override default file editing behaviour.
      * Given route must contain `:id` template, like this:
      * ```php
-     * route('tower_admin::file.update', ['file' => ':id'])
+     * route('tower::innate::file.update', ['file' => ':id'])
      * ```
      *
      * @param string $editUrl

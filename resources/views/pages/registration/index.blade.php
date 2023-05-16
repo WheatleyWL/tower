@@ -8,7 +8,7 @@
                     <div class="card-header">Регистрация</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('tower_admin::register') }}">
+                        <form method="POST" action="{{ route('tower::innate::register') }}">
                             @csrf
 
                             <div class="form-group row">

@@ -12,6 +12,6 @@ class TowerAdmin extends \Illuminate\Support\Facades\Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'tower_admin::global_context';
+        return 'tower::global_context';
     }
 }

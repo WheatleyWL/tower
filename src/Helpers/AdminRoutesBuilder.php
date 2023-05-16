@@ -22,11 +22,21 @@ class AdminRoutesBuilder
     protected const ROUTE_LOGOUT = 'logout';
     protected const ROUTE_FILE = 'file';
 
+    protected const PUBLIC_ROUTES = [
+        self::ROUTE_LOGIN,
+        self::ROUTE_REGISTER,
+    ];
+
     protected static bool $towerRoutesInstalled = false;
 
     protected array $requiredRoutes = [];
     protected string $routePrefix = 'admin';
     protected ?Closure $appRouteSpawner = null;
+
+    /** @var string[] */
+    protected array $publicMiddleware = [];
+    /** @var string[] */
+    protected array $guardedMiddleware = [];
 
     /**
      * @return static
@@ -110,6 +120,26 @@ class AdminRoutesBuilder
     }
 
     /**
+     * @param string[] $middleware
+     * @return $this
+     */
+    public function setPublicMiddleware(array $middleware): self
+    {
+        $this->publicMiddleware = $middleware;
+        return $this;
+    }
+
+    /**
+     * @param array $middleware
+     * @return $this
+     */
+    public function setGuardedMiddleware(array $middleware): self
+    {
+        $this->guardedMiddleware = $middleware;
+        return $this;
+    }
+
+    /**
      * @param callable $spawner
      * @return $this
      */
@@ -127,15 +157,30 @@ class AdminRoutesBuilder
         Route::prefix($this->routePrefix)
             ->middleware(['web'])
             ->group(function () {
-                Route::group(['as' => 'tower_admin::'], function() {
-                    foreach($this->requiredRoutes as $routeName) {
-                        $this->installRoute($routeName);
-                    }
+                Route::name('tower::innate::')->group(function() {
+                    $remaining = array_flip($this->requiredRoutes);
+
+                    Route::middleware($this->publicMiddleware)->group(function() use(&$remaining) {
+                        foreach(self::PUBLIC_ROUTES as $routeName) {
+                            if(isset($remaining[$routeName])) {
+                                $this->installRoute($routeName);
+                                unset($remaining[$routeName]);
+                            }
+                        }
+                    });
+
+                    Route::middleware($this->guardedMiddleware)->group(function() use($remaining) {
+                        Route::get('/', [HomeController::class, 'index'])->name('home');
+
+                        foreach($remaining as $routeName => $_) {
+                            $this->installRoute($routeName);
+                        }
+                    });
                 });
 
-                $this->appRouteSpawner?->call($this);
-
-                Route::get('/', [HomeController::class, 'index'])->name('home');
+                Route::name('tower::')->group(function() {
+                    $this->appRouteSpawner?->call($this);
+                });
             });
 
         self::$towerRoutesInstalled = true;
@@ -149,13 +194,13 @@ class AdminRoutesBuilder
     {
         switch($routeName) {
             case self::ROUTE_LOGIN:
-                Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-                Route::post('login', [LoginController::class, 'login']);
+                Route::get('login', [LoginController::class, 'show'])->name('login');
+                Route::post('login', [LoginController::class, 'submit'])->name('login.submit');
                 break;
 
             case self::ROUTE_REGISTER:
-                Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-                Route::post('register', [RegisterController::class, 'register']);
+                Route::get('register', [RegisterController::class, 'show'])->name('register');
+                Route::post('register', [RegisterController::class, 'submit'])->name('register.submit');
                 break;
 
             case self::ROUTE_LOGOUT:

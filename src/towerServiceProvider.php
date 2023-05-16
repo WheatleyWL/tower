@@ -37,7 +37,7 @@ class towerServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton('tower_admin::global_context', function() {
+        $this->app->singleton('tower::global_context', function() {
             return new GlobalContext();
         });
     }

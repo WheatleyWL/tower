@@ -8,7 +8,7 @@
                     <div class="card-header">Войти</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('tower_admin::login') }}">
+                        <form method="POST" action="{{ route('tower::innate::login') }}">
                             @csrf
 
                             <div class="form-group row">

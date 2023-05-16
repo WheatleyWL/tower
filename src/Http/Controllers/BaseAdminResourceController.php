@@ -27,6 +27,9 @@ class BaseAdminResourceController extends BaseAdminController
     /** @var string|null classname of the Request which this resource uses for storing and updating */
     protected ?string $request = null;
 
+    /** @var string a name prefix used to reference resource routes */
+    protected string $routePrefix = 'tower::';
+
     /** @var string|null name of the resource; should be the same as resource route name */
     protected ?string $resourceName = 'resource_name';
 
@@ -49,6 +52,15 @@ class BaseAdminResourceController extends BaseAdminController
     protected string $formClass = BaseForm::class;
 
     /**
+     * @param string $route
+     * @return string
+     */
+    protected function resourceRouteName(string $route): string
+    {
+        return $this->routePrefix . $this->resourceName . '.' . $route;
+    }
+
+    /**
      * Provides a map of routes used by the resource.
      * @param $model
      * @return array
@@ -56,9 +68,9 @@ class BaseAdminResourceController extends BaseAdminController
     protected function getRoutes($model): array
     {
         return [
-            'store' => route($this->resourceName . '.store'),
-            'editBack' => route($this->resourceName . '.index'),
-            'createBack' => route($this->resourceName . '.index')
+            'store' => route($this->resourceRouteName('store')),
+            'editBack' => route($this->resourceRouteName('index')),
+            'createBack' => route($this->resourceRouteName('store')),
         ];
     }
 
@@ -97,8 +109,8 @@ class BaseAdminResourceController extends BaseAdminController
     protected function actions(): ActionsColumn
     {
         return (new ActionsColumn())
-            ->setEditRoute($this->resourceName . '.edit')
-            ->setDeleteRoute($this->resourceName . '.destroy')
+            ->setEditRoute($this->resourceRouteName('edit'))
+            ->setDeleteRoute($this->resourceRouteName('destroy'))
             ->setDeleteOn()
             ->setDeleteWithForm()
             ->setEditOn()
@@ -151,7 +163,7 @@ class BaseAdminResourceController extends BaseAdminController
             ->setColumns([$actionColumn, ...$otherColumns])
             ->enableAdd()
             ->setFilters($filters)
-            ->setAddPath(route($this->resourceName . '.create'))
+            ->setAddPath(route($this->resourceRouteName('create')))
             ->setQuery($this->getListQuery())
             ->enablePaginate()
             ->setItemsOnPage($this->itemsOnPage);
@@ -170,7 +182,7 @@ class BaseAdminResourceController extends BaseAdminController
         $model = new $this->modelClass;
         $form = (new $this->formClass($this->resourceName . '.form'))
             ->setTitle($this->createTitle)
-            ->setAction(route($this->resourceName . '.store'))
+            ->setAction(route($this->resourceRouteName('store')))
             ->setEncType('multipart/form-data')
             ->setMethod('POST')
             ->setBack($this->getRoutes($model)['createBack'])
@@ -226,7 +238,7 @@ class BaseAdminResourceController extends BaseAdminController
         /** @var BaseForm $form */
         $form = (new $this->formClass($this->resourceName . '.form'))
             ->setTitle($this->editTitle)
-            ->setAction(route($this->resourceName . '.update',[$this->resourceName => $id]))
+            ->setAction(route($this->resourceRouteName('update'), [$this->resourceName => $id]))
             ->setEncType('multipart/form-data')
             ->setMethod('POST')
             ->setBack($this->getRoutes($model)['editBack'])

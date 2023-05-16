@@ -43,7 +43,7 @@ class File extends Model
             return null;
         }
 
-        return route('tower_admin::file.update', ['file' => $this->id]);
+        return route('tower::innate::file.update', ['file' => $this->id]);
     }
 
     public function getDeleteUrlAttribute(): ?string
@@ -52,6 +52,6 @@ class File extends Model
             return null;
         }
 
-        return route('tower_admin::file.destroy', ['file' => $this->id]);
+        return route('tower::innate::file.destroy', ['file' => $this->id]);
     }
 }
