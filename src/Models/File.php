@@ -6,6 +6,7 @@ namespace zedsh\tower\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 
 class File extends Model
@@ -16,17 +17,27 @@ class File extends Model
 
     protected $fillable = [
         'path',
+        'name',
+        'extension',
         'title',
         'alt',
-        'uid',
-        'name',
-        'ext',
-        'inputFieldName'
+        'size',
     ];
 
     protected $appends = [
-        'edit_url',
-        'delete_url',
+        'url',
+    ];
+
+    protected $hidden = [
+        'id',
+        'path',
+        'name',
+        'extension',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'size',
+        'pivot',
     ];
 
     public function isImage(): bool
@@ -53,5 +64,10 @@ class File extends Model
         }
 
         return route('tower::innate::file.destroy', ['file' => $this->id]);
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return Storage::disk('public')->url($this->path);
     }
 }
