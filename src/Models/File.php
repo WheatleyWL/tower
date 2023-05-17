@@ -29,7 +29,6 @@ class File extends Model
     ];
 
     protected $hidden = [
-        'id',
         'path',
         'name',
         'extension',
