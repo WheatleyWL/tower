@@ -2,6 +2,7 @@ var Tower = {
     bootstrap: function() {
         TowerThemeSwitcher.init();
         TowerDropZone.init();
+        StringListField.init();
     },
 }
 

@@ -19,6 +19,7 @@
     <script defer src="/admin_assets/js/tower.js"></script>
     <script defer src="/admin_assets/js/components/theme.js"></script>
     <script defer src="/admin_assets/js/components/dropzone.js"></script>
+    <script defer src="/admin_assets/js/components/string_list.js"></script>
 
     <!-- Dropzone -->
     <script defer src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
