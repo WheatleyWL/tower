@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-5">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-header">Авторизация</div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('tower::innate::login') }}">
