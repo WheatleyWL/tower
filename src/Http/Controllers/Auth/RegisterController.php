@@ -15,7 +15,7 @@ class RegisterController extends Controller
 
     public function show()
     {
-        return view('tower::pages.registration.index');
+        return view('tower::pages.auth.register');
     }
 
     public function submit(RegisterRequest $request)

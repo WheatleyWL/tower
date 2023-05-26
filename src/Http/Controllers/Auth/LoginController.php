@@ -13,7 +13,7 @@ class LoginController extends Controller
 {
     public function show()
     {
-        return view('tower::pages.authorization.index');
+        return view('tower::pages.auth.auth');
     }
 
     public function submit(LoginRequest $request)

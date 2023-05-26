@@ -28,43 +28,37 @@
         }
     </style>
 </head>
-<body>
-<div id="app">
-    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-        <div class="container">
+<body class="position-relative min-vh-100 d-flex flex-column bg-body-secondary">
+    <header class="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
+        <nav class="container-xxl flex-nowrap">
             <a class="navbar-brand" href="{{ url('/') }}">
                 {{ config('app.name', 'Laravel') }}
             </a>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <!-- Left Side Of Navbar -->
-                <ul class="navbar-nav mr-auto">
-
-                </ul>
-
-                <!-- Right Side Of Navbar -->
-                <ul class="navbar-nav ml-auto">
-                    <!-- Authentication Links -->
-                    @guest
+            <ul class="navbar-nav ml-auto">
+                <!-- Authentication Links -->
+                @guest
+                    @if(route('tower::innate::login') && !request()->route()->named('tower::innate::login'))
                         <li class="nav-item" style="margin-right: 10px;">
                             <a class="nav-link" href="{{ route('tower::innate::login') }}">Войти</a>
                         </li>
-                        @if (Route::has('tower::innate::register'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('tower::innate::register') }}">{{ __('Register') }}</a>
-                            </li>
-                        @endif
-                    @else
-                    @endguest
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <main class="py-4">
+                    @endif
+                    @if (Route::has('tower::innate::register'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('tower::innate::register') }}">{{ __('Register') }}</a>
+                        </li>
+                    @endif
+                @else
+                @endguest
+            </ul>
+        </nav>
+    </header>
+    <main class="flex-fill d-flex flex-column justify-content-center">
         @yield('content')
     </main>
-</div>
+    <div class="align-self-center mb-2">
+        <small class="text-muted">powered by tower admin v2.0.0</small>
+    </div>
+
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 <script src="/admin_assets/js/bootstrap.bundle.min.js"></script>
 <script src="/admin_assets/libs/tinymce/tinymce.min.js"></script>
